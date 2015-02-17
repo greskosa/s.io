@@ -1,0 +1,42 @@
+html,body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+}
+canvas{
+    display: block;
+    background: url("../imgs/bg.jpg") scroll 0 0;
+    background-size: 100% 100%;
+    margin:30px auto;
+}
+#portrait{
+    display: none;
+    position: absolute;
+    text-align: center;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    text-align: center;
+    background: #000000;
+    color:red;
+    font-family: Verdana;
+    font-size: 20px;
+}
+#portrait span{
+    margin: 0 auto;
+}
+@media screen and (orientation:portrait) {
+ #portrait{
+     display: -webkit-flexbox;
+     display: -ms-flexbox;
+     display: -webkit-flex;
+     display: flex;
+ }
+}
