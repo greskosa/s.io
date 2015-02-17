@@ -5,7 +5,10 @@ require.config({
         pixijs:'./libs/pixi',
         connection:'./parts/connection',
         checkWebGl:'./parts/checkWebGl',
-        game:'./parts/game'
+        game:'./parts/game',
+        Scene:'./parts/SceneBase',
+        ScenesManager:'./parts/ScenesManager',
+        StartScene:'./parts/StartScene'
     },
     shim: {
         pixijs:{
