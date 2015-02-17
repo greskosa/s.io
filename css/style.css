@@ -28,6 +28,7 @@ canvas{
     color:red;
     font-family: Verdana;
     font-size: 20px;
+    z-index: 2;
 }
 #portrait span{
     margin: 0 auto;
