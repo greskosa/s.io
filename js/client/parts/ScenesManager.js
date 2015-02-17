@@ -36,7 +36,7 @@ define([
         requestAnimFrame(function(){this.loop()}.bind(this));
         if (!this.currentScene || this.currentScene.isPaused()) return;
         this.currentScene.update();
-        this.renderer.render(this.currentScene);
+        this.renderer.render(this.currentScene.rootStage);
     }
     /**
     * Create new scene

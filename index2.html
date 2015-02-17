@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+<script src="./js/client/libs/pixi.js"></script>
+<script>
+    var renderer = new PIXI.WebGLRenderer(800, 600);
+
+    document.body.appendChild(renderer.view);
+
+    var stage = new PIXI.Stage;
+    var bunny=false
+
+    setTimeout(function(){
+        var bunnyTexture = PIXI.Texture.fromImage("./imgs/bunny.png");
+        bunny= new PIXI.Sprite(bunnyTexture);
+        bunny.interactive=true
+        bunny.position.x = 400;
+        bunny.position.y = 300;
+
+        bunny.scale.x = 2;
+        bunny.scale.y = 2;
+        bunny.mousedown = bunny.touchstart=function(){
+            alert(1)
+        }
+        console.log(stage)
+        stage.addChild(bunny);
+    },2000)
+
+
+    requestAnimationFrame(animate);
+
+    function animate() {
+        if(bunny) bunny.rotation += 0.01;
+
+        renderer.render(stage);
+
+        requestAnimationFrame(animate);
+    }
+</script>
+
+</body>
+</html>

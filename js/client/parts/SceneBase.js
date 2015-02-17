@@ -40,6 +40,7 @@ define([
           this.addChild(text);
       }
       this.addButton=function(imgDefault,imgDown,imgOver,position){
+            var self=this
             // create some textures from an image path
             var textureButton,textureButtonDown,textureButtonOver;
             textureButton= PIXI.Texture.fromImage(imgDefault);
@@ -55,12 +56,14 @@ define([
             button.position.x = position.x
             button.position.y = position.y
             button.mousedown = button.touchstart = function(data) {
+                if(self.isPaused()) return
                       this.isdown = true;
                       this.setTexture(textureButtonDown);
                       this.alpha = 1;
             };
            // set the mouseup and touchend callback..
             button.mouseup = button.touchend = button.mouseupoutside = button.touchendoutside = function(data) {
+              if(self.isPaused()) return
               this.isdown = false;
               if (textureButtonOver&&this.isOver)
               {
@@ -73,6 +76,7 @@ define([
             };
                 // set the mouseover callback..
             button.mouseover = function(data) {
+                if(self.isPaused()) return
                 this.isOver = true;
                 if (this.isdown||!textureButtonOver)
                     return;
@@ -80,6 +84,7 @@ define([
             };
             // set the mouseout callback..
             button.mouseout = function(data) {
+                if(self.isPaused()) return
                 this.isOver = false;
 
                 if (this.isdown)
@@ -89,7 +94,9 @@ define([
             this.addChild(button)
       }
   }
-  Scene.prototype=new PIXI.Stage()
+  stage=new PIXI.Stage()
+  Scene.prototype=stage
+  Scene.prototype.rootStage=stage
   Scene.prototype.constructor=Scene
 
 
