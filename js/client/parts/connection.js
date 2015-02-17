@@ -9,14 +9,14 @@ define([
                socket.on('message', function (msg) {
                   switch(msg.event){
                       case "connected":
-                          game.startScene.addSuccesStageUi(msg.name,{x:game.canvasWidth-128,y:20})
+                          game.startScene.addSuccesStageUi(msg.name)
                           break;
 
                   }
                });
            });
     },function(err){
-        game.startScene.addFailedStageUi('Connection problem, try later.',{x:game.canvasWidth/2,y:game.canvasHeight*2/3})
+        game.startScene.addFailedStageUi('Connection problem, try later.')
     })
 
 }

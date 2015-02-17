@@ -4,7 +4,14 @@ define([
   function Scene(){
       this.updateCallback=null
       this.paused=false
+      this.size={}
+      this.size.width=0
+      this.size.height=0
 
+      this.setCanvasSize=function(width,height){
+          this.size.width=width
+          this.size.height=height
+      }
       this.onUpdate=function(updateCallback){
           if(!updateCallback) return false
           this.updateCallback=updateCallback

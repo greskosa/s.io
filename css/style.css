@@ -42,12 +42,12 @@ canvas{
  }
 }
 
-@media screen and (min-height: 600px) {
+@media screen and (min-height: 768px) {
     canvas {
        position: absolute;
        top:50%;
        left: 50%;
-       margin-left: -400px;
-       margin-top: -300px;
+       margin-left: -512px;
+       margin-top: -384px;
     }
 }
