@@ -4,7 +4,7 @@ define([
     config=JSON.parse(config)
     game.addGameTitle()
     require([config.server+":"+config.port+"/socket.io/socket.io.js"],function(io){
-        var socket = io.connect('http://localhost:8080');
+        var socket = io.connect(config.server+":"+config.port);
            socket.on('connect', function () {
 //               socket.send('hi');
 

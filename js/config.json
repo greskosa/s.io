@@ -1,6 +1,6 @@
 {
     "appName":"SeaBattle PvP 1.0",
-    "server":"http://10.37.4.250",
-    "port":"8080",
+    "server":"http://104.47.142.51",
+    "port":"80",
     "defaultPlayerName":"Player"
 }
