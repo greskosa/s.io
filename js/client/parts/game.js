@@ -37,12 +37,10 @@ Game.prototype.addText=function(text,options,position){
     this.stage.addChild(text);
 }
 Game.prototype.addSuccesStageUi=function(name){
-    this.addGameTitle()
     this.addStartBtns()
     this.addPlayerName(name)
 }
 Game.prototype.addFailedStageUi=function(err){
-    this.addGameTitle()
     this.addErrorMessage(err)
 }
 Game.prototype.addStartBtns=function(){
