@@ -9,7 +9,6 @@ define([
                this.scenesManager.create(this.canvasWidth,this.canvasHeight,{transparent:true})
                //create a the start scene
                this.startScene = this.scenesManager.createScene('StartScene');
-               this.startScene.setCanvasSize(this.canvasWidth,this.canvasHeight)
                this.startScene.addGameTitle()
                //change current scene
                this.scenesManager.goToScene('StartScene');

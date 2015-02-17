@@ -17,7 +17,8 @@ define([
      */
     ScenesManager.prototype.create= function(width,height,options){
         if (ScenesManager.prototype.renderer) return this
-
+        this.width=width
+        this.height=height
         if(window.WebGl){
           ScenesManager.prototype.renderer = new PIXI.WebGLRenderer(width, height, options);
         }
@@ -52,6 +53,7 @@ define([
             default:
                 scene=new Scene()
         }
+        scene.setCanvasSize(this.width,this.height)
         this.scenes[id] = scene;
         return scene;
     }
