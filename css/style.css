@@ -9,7 +9,7 @@ canvas{
     display: block;
     background: url("../imgs/bg.jpg") scroll 0 0;
     background-size: 100% 100%;
-    margin:30px auto;
+    margin:0 auto;
 }
 #portrait{
     display: none;
@@ -39,4 +39,14 @@ canvas{
      display: -webkit-flex;
      display: flex;
  }
+}
+
+@media screen and (min-height: 600px) {
+    canvas {
+       position: absolute;
+       top:50%;
+       left: 50%;
+       margin-left: -400px;
+       margin-top: -300px;
+    }
 }

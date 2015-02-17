@@ -1,4 +1,6 @@
-var io = require('socket.io').listen(8080);
+var config = require('./../config.json');
+var io = require('socket.io').listen(config.port);
+
 var playerString='Player'
 var connections=0
 io.sockets.on('connection', function (socket) {
