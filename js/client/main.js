@@ -5,13 +5,13 @@ require.config({
         pixijs:'./libs/pixi',
         connection:'./parts/connection',
         checkWebGl:'./parts/checkWebGl',
-        canvas:'./parts/canvas'
+        game:'./parts/game'
     },
     shim: {
         pixijs:{
             exports:'PIXI'
         },
-        canvas:{
+        game:{
             deps:["pixijs","checkWebGl"]
         }
     },
