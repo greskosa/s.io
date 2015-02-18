@@ -5,12 +5,19 @@ define([
       this.updateCallback=null
       this.paused=false
       this.size={}
+      this.scale={}
       this.size.width=0
       this.size.height=0
+      this.scale.scaleX=1
+      this.scale.scaleY=1
 
       this.setCanvasSize=function(width,height){
           this.size.width=width
           this.size.height=height
+      }
+      this.setScale=function(scaleX,scaleY){
+          this.scale.scaleX=scaleX
+          this.scale.scaleY=scaleY
       }
       this.onUpdate=function(updateCallback){
           if(!updateCallback) return false
@@ -37,6 +44,8 @@ define([
           // center the sprites anchor point
           text.anchor.x = 0.5;
           text.anchor.y = 0.5;
+          text.scale.x = this.scale.scaleX
+          text.scale.y = this.scale.scaleY+0.1 //#hard fix
           this.addChild(text);
       }
       this.addButton=function(imgDefault,imgDown,imgOver,position){
@@ -53,6 +62,8 @@ define([
             button.interactive = true;
             button.anchor.x = 0.5;
             button.anchor.y = 0.5;
+            button.scale.x = this.scale.scaleX
+            button.scale.y = this.scale.scaleY
             button.position.x = position.x
             button.position.y = position.y
             button.mousedown = button.touchstart = function(data) {

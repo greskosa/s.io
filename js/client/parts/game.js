@@ -1,12 +1,16 @@
 define([
-    'ScenesManager'
-],  function(ScenesManager){
+    'ScenesManager','text!./../config.json'
+],  function(ScenesManager,config){
+        config=JSON.parse(config)
         function Game(){
-               this.canvasWidth=window.outerWidth>1024? 1024:window.outerWidth
-               this.canvasHeight=window.outerHeight>768? 768:window.outerHeight
+               var screen={}
+               screen.width=window.outerWidth>config.originalWidth? config.originalWidth:window.outerWidth
+               screen.height=window.outerHeight>config.originalHeight? config.originalHeight:window.outerHeight
+               screen.scaleX=screen.width/config.originalWidth
+               screen.scaleY=screen.height/config.originalHeight
                this.scenesManager=new ScenesManager()
                //create renderer
-               this.scenesManager.create(this.canvasWidth,this.canvasHeight,{transparent:true})
+               this.scenesManager.create(screen,{transparent:true})
                //create a the start scene
                this.startScene = this.scenesManager.createScene('StartScene');
                this.startScene.addGameTitle()

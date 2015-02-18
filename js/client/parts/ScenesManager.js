@@ -11,19 +11,14 @@ define([
      /**
      * Create an instance of Renderer
      *
-     * @param {number} width Width of canvas.
-     * @param {number} height Width of canvas.
-     * @param {number} object Options of renderer, fox example transparent.
+     * @param {object} screen Width,Height or Scale of canvas.
+     * @param {object} options Options of renderer, fox example transparent.
      */
-    ScenesManager.prototype.create= function(width,height,options){
+    ScenesManager.prototype.create= function(screen,options){
         if (ScenesManager.prototype.renderer) return this
-        this.width=width
-        this.height=height
-        if(window.WebGl){
-          ScenesManager.prototype.renderer = new PIXI.WebGLRenderer(width, height, options);
-        }
-        else
-          ScenesManager.prototype.renderer= PIXI.autoDetectRenderer(width, height, options);
+        console.log(screen)
+        this.screen=screen
+        ScenesManager.prototype.renderer= PIXI.autoDetectRenderer(screen.width, screen.height, options);
         document.body.appendChild(ScenesManager.prototype.renderer.view);
         requestAnimFrame(this.loop.bind(this));
         return this;
@@ -53,7 +48,8 @@ define([
             default:
                 scene=new Scene()
         }
-        scene.setCanvasSize(this.width,this.height)
+        scene.setCanvasSize(this.screen.width,this.screen.height)
+        scene.setScale(this.screen.scaleX,this.screen.scaleY)
         this.scenes[id] = scene;
         return scene;
     }
