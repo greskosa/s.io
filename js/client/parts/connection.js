@@ -9,7 +9,7 @@ define([
                socket.on('message', function (msg) {
                   switch(msg.event){
                       case "connected":
-                          game.startScene.addSuccesStageUi(msg.name)
+                          game.startScene.addSuccesStageUi(msg.name,game.goToCreateGameScene,game.goToJoinGameScene,game)
                           break;
 
                   }

@@ -48,14 +48,12 @@ define([
           text.scale.y = this.scale.scaleY+0.1 //#hard fix
           this.addChild(text);
       }
-      this.addButton=function(imgDefault,imgDown,imgOver,position){
+      this.addButton=function(imgDefault,imgDown,imgOver,position,callback,context){
             var self=this
             // create some textures from an image path
-            var textureButton,textureButtonDown,textureButtonOver;
+            var textureButton,textureButtonDown;
             textureButton= PIXI.Texture.fromImage(imgDefault);
             textureButtonDown = PIXI.Texture.fromImage(imgDown);
-            if(imgOver)
-                textureButtonOver = PIXI.Texture.fromImage(imgOver);
             var button = new PIXI.Sprite(textureButton);
             button.buttonMode = true;
             // make the button interactive..
@@ -68,40 +66,17 @@ define([
             button.position.y = position.y
             button.mousedown = button.touchstart = function(data) {
                 if(self.isPaused()) return
-                      this.isdown = true;
-                      this.setTexture(textureButtonDown);
-                      this.alpha = 1;
+                this.setTexture(textureButtonDown);
             };
            // set the mouseup and touchend callback..
             button.mouseup = button.touchend = button.mouseupoutside = button.touchendoutside = function(data) {
               if(self.isPaused()) return
-              this.isdown = false;
-              if (textureButtonOver&&this.isOver)
-              {
-                  this.setTexture(textureButtonOver);
-              }
-              else
-              {
-                  this.setTexture(textureButton);
-              }
+                if(callback){
+                    callback.call(context)
+                }
+                this.setTexture(textureButton);
             };
-                // set the mouseover callback..
-            button.mouseover = function(data) {
-                if(self.isPaused()) return
-                this.isOver = true;
-                if (this.isdown||!textureButtonOver)
-                    return;
-                this.setTexture(textureButtonOver);
-            };
-            // set the mouseout callback..
-            button.mouseout = function(data) {
-                if(self.isPaused()) return
-                this.isOver = false;
 
-                if (this.isdown)
-                    return;
-                this.setTexture(textureButton)
-            }
             this.addChild(button)
       }
   }
