@@ -1,6 +1,6 @@
 define([
-    'pixijs','Scene','StartScene'
-],  function(PIXI,Scene,StartScene){
+    'pixijs','Scene','StartScene','CreateGameScene'
+],  function(PIXI,Scene,StartScene,CreateGameScene){
       function ScenesManager(){
 
       }
@@ -39,11 +39,14 @@ define([
     * @param {string} id Id of new scene.
     */
     ScenesManager.prototype.createScene=function(id){
-        if (this.scenes[id]) return undefined; //doesn't create if exist
+        if (this.scenes[id]) return this.scenes[id]; //doesn't create if exist, just return
         var scene;
         switch (id){
             case 'StartScene':
                 scene = new StartScene();
+                break;
+            case 'CreateGameScene':
+                scene = new CreateGameScene();
                 break;
             default:
                 scene=new Scene()

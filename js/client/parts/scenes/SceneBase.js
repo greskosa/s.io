@@ -46,7 +46,8 @@ define([
           text.anchor.y = 0.5;
           text.scale.x = this.scale.scaleX
           text.scale.y = this.scale.scaleY+0.1 //#hard fix
-          this.addChild(text);
+          this.addChild.call(this,text);
+          return text
       }
       this.addButton=function(imgDefault,imgDown,imgOver,position,callback,context){
             var self=this
@@ -77,7 +78,20 @@ define([
                 this.setTexture(textureButton);
             };
 
-            this.addChild(button)
+           this.addChild.call(this,button);
+      }
+      this.addTransparentBg=function(){
+          var bg = PIXI.Sprite.fromImage("imgs/transparent-bg.png");
+          bg.position.x = 0;
+          bg.position.y = 0;
+          this.addChild.call(this,bg);
+      }
+      this.clear=function(){
+          console.log(this)
+          console.log(this.children)
+          //for (var i = this.children.length - 1; i >= 0; i--) {
+          //    this.removeChild(this.children[i]);
+          //};
       }
   }
   stage=new PIXI.Stage()

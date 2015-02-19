@@ -1,6 +1,6 @@
 define([
-    'ScenesManager','text!./../config.json'
-],  function(ScenesManager,config){
+    'ScenesManager','text!./../config.json','pixijs'
+],  function(ScenesManager,config,PIXI){
         config=JSON.parse(config)
         function Game(){
                var screen={}
@@ -16,14 +16,26 @@ define([
                this.goToStartScene=function(){
                    //create a the start scene
                    this.startScene = this.scenesManager.createScene('StartScene');
+                   if(this.createGameScene)
+                       this.createGameScene.clear()
                    this.startScene.addGameTitle()
                    //change current scene
                    this.scenesManager.goToScene('StartScene');
                }
                this.goToCreateGameScene=function(){
-                   alert(1)
-                   this.createScene = this.scenesManager.createScene('CreateGameScene');
-                   this.scenesManager.goToScene('CreateGameScene');
+                   var roomName=prompt('Enter name of room:')
+                   if(roomName!=null){
+                       this.createGameScene = this.scenesManager.createScene('CreateGameScene');
+                       this.createGameScene.addTransparentBg()
+                       this.createGameScene.loadingWait()
+                       this.scenesManager.goToScene('CreateGameScene');
+                       setTimeout(function(){
+                           this.socket.emit('createRoom',{name:roomName})
+                       }.bind(this),1500)
+                   } else
+                       this.goToStartScene()
+
+
                }
                this.goToJoinGameScene=function(){
                    alert(2)

@@ -6,9 +6,10 @@ require.config({
         connection:'./parts/connection',
         checkWebGl:'./parts/checkWebGl',
         game:'./parts/game',
-        Scene:'./parts/SceneBase',
+        Scene:'./parts/scenes/SceneBase',
         ScenesManager:'./parts/ScenesManager',
-        StartScene:'./parts/StartScene'
+        StartScene:'./parts/scenes/StartScene',
+        CreateGameScene:'./parts/scenes/CreateGameScene'
     },
     shim: {
         pixijs:{
