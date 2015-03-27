@@ -3,8 +3,7 @@ require.config({
     baseUrl:"./js/client",
     paths:{
         pixijs:'./libs/pixi',
-        connection:'./parts/connection',
-        checkWebGl:'./parts/checkWebGl',
+        connections:'./parts/connections',
         game:'./parts/game',
         Scene:'./parts/scenes/SceneBase',
         ScenesManager:'./parts/ScenesManager',
@@ -16,12 +15,12 @@ require.config({
             exports:'PIXI'
         },
         game:{
-            deps:["pixijs","checkWebGl"]
+            deps:["pixijs"]
         }
     },
 
 
 
 //#    kick start application
-    deps: ['./parts/connection']
+    deps: ['./parts/connections']
 });

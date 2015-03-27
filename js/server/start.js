@@ -18,6 +18,7 @@ io.sockets.on('connection', function (socket) {
         if(roomsCount<+config.maxRoomsLimit){
             if(data.name&&!rooms[data.name]){
                 rooms[data.name]=true
+                console.log(rooms)
                 console.log('create')
                 socket.json.send({'event': 'roomCreatedSuccess'})
             }else{

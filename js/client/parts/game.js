@@ -16,9 +16,6 @@ define([
                this.goToStartScene=function(){
                    //create a the start scene
                    this.startScene = this.scenesManager.createScene('StartScene');
-                   if(this.createGameScene)
-                       this.createGameScene.clear()
-                   this.startScene.addGameTitle()
                    //change current scene
                    this.scenesManager.goToScene('StartScene');
                }
@@ -49,4 +46,3 @@ define([
      return new Game()
     }
 )
-

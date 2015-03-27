@@ -209,7 +209,7 @@
         if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
         {
             var args = [
-                '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
+                '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ?%c?%c? ',
                 'background: #ff66a5',
                 'background: #ff66a5',
                 'color: #ff66a5; background: #030307;',
@@ -1608,7 +1608,7 @@
      */
     PIXI.DisplayObject.prototype.toLocal = function(position, from)
     {
-        // 
+        //
         if (from)
         {
             position = from.toGlobal(position);
@@ -2477,7 +2477,7 @@
             if(d < 0)d *= -1;
 
             // this means there is no rotation going on right? RIGHT?
-            // if thats the case then we can avoid checking the bound values! yay         
+            // if thats the case then we can avoid checking the bound values! yay
             minX = a * w1 + tx;
             maxX = a * w0 + tx;
             minY = d * h1 + ty;
@@ -6861,7 +6861,7 @@
                 PIXI.WebGLGraphics.graphicsDataPool.push( graphicsData );
             }
 
-            // clear the array and reset the index.. 
+            // clear the array and reset the index..
             webGL.data = [];
             webGL.lastIndex = 0;
         }
@@ -7095,7 +7095,7 @@
 
             var triangles = PIXI.PolyK.Triangulate(recPoints);
 
-            // 
+            //
 
             var i = 0;
             for (i = 0; i < triangles.length; i+=3)
@@ -7523,7 +7523,7 @@
             maxX, maxY,
             minX, maxY);
 
-        // push a quad onto the end.. 
+        // push a quad onto the end..
 
         //TODO - this aint needed!
         var length = points.length / 2;
@@ -8987,7 +8987,7 @@
     {
         var texture = sprite.texture;
 
-        //TODO set blend modes.. 
+        //TODO set blend modes..
         // check texture..
         if(this.currentBatchSize >= this.size)
         {
@@ -9258,7 +9258,7 @@
             gl.vertexAttribPointer(shader.colorAttribute, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
         }
 
-        // upload the verts to the buffer  
+        // upload the verts to the buffer
         if(this.currentBatchSize > ( this.size * 0.5 ) )
         {
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -10136,7 +10136,7 @@
         // bind the buffer
         gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
 
-        // set the blend mode! 
+        // set the blend mode!
         //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
         // set texture
@@ -11462,7 +11462,7 @@
             /*
              var colorR = (fillColor >> 16 & 0xFF) / 255;
              var colorG = (fillColor >> 8 & 0xFF) / 255;
-             var colorB = (fillColor & 0xFF) / 255; 
+             var colorB = (fillColor & 0xFF) / 255;
 
              colorR *= tintR;
              colorG *= tintG;
@@ -11472,13 +11472,13 @@
 
              colorR = (lineColor >> 16 & 0xFF) / 255;
              colorG = (lineColor >> 8 & 0xFF) / 255;
-             colorB = (lineColor & 0xFF) / 255; 
+             colorB = (lineColor & 0xFF) / 255;
 
              colorR *= tintR;
              colorG *= tintG;
              colorB *= tintB;
 
-             lineColor = ((colorR*255 << 16) + (colorG*255 << 8) + colorB*255);   
+             lineColor = ((colorR*255 << 16) + (colorG*255 << 8) + colorB*255);
              */
 
             // super inline cos im an optimization NAZI :)
@@ -11833,7 +11833,7 @@
 
     /*
      * The arcTo() method creates an arc/curve between two tangents on the canvas.
-     * 
+     *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
      * @method arcTo
@@ -12511,7 +12511,7 @@
         // this._cachedSprite.buffer.context.save();
         this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
 
-        // make sure we set the alpha of the graphics to 1 for the render.. 
+        // make sure we set the alpha of the graphics to 1 for the render..
         this.worldAlpha = 1;
 
         // now render the graphic..
@@ -17523,7 +17523,7 @@
         if(!this.valid)return;
         //TOOD replace position with matrix..
 
-        //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix 
+        //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix
         var wt = displayObject.worldTransform;
         wt.identity();
         wt.translate(0, this.projection.y * 2);
@@ -17533,7 +17533,7 @@
         // setWorld Alpha to ensure that the object is renderer at full opacity
         displayObject.worldAlpha = 1;
 
-        // Time to update all the children of the displayObject with the new matrix..    
+        // Time to update all the children of the displayObject with the new matrix..
         var children = displayObject.children;
 
         for(var i=0,j=children.length; i<j; i++)
@@ -17578,7 +17578,7 @@
         // setWorld Alpha to ensure that the object is renderer at full opacity
         displayObject.worldAlpha = 1;
 
-        // Time to update all the children of the displayObject with the new matrix..    
+        // Time to update all the children of the displayObject with the new matrix..
         var children = displayObject.children;
 
         for(var i = 0, j = children.length; i < j; i++)
