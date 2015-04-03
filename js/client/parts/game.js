@@ -23,8 +23,6 @@ define([
                    var roomName=prompt('Enter name of room:')
                    if(roomName!=null){
                        this.createGameScene = this.scenesManager.createScene('CreateGameScene');
-                       this.createGameScene.addTransparentBg()
-                       this.createGameScene.loadingWait()
                        this.scenesManager.goToScene('CreateGameScene');
                        setTimeout(function(){
                            this.socket.emit('createRoom',{name:roomName})
@@ -35,9 +33,9 @@ define([
 
                }
                this.goToJoinGameScene=function(){
-                   alert(2)
-                   this.createScene = this.scenesManager.createScene('JoinGameScene');
+                   this.joinGameScene = this.scenesManager.createScene('JoinGameScene');
                    this.scenesManager.goToScene('JoinGameScene');
+                   this.socket.emit('getAllRooms')
 
                }
                this.goToStartScene()

@@ -20,6 +20,8 @@ define([
                       setTimeout(()->
                           game.goToStartScene()
                       ,2500)
+                  when "gamesList"
+                    game.joinGameScene.renderAvailableRooms(msg.rooms)
            );
         )
       ,(err)->

@@ -8,7 +8,8 @@ require.config({
         Scene:'./parts/scenes/SceneBase',
         ScenesManager:'./parts/ScenesManager',
         StartScene:'./parts/scenes/StartScene',
-        CreateGameScene:'./parts/scenes/CreateGameScene'
+        CreateGameScene:'./parts/scenes/CreateGameScene',
+        JoinGameScene:'./parts/scenes/JoinGameScene'
     },
     shim: {
         pixijs:{

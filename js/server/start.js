@@ -4,21 +4,25 @@ var io = require('socket.io').listen(config.port);
 var connections=0
 var rooms={}
 io.sockets.on('connection', function (socket) {
+    console.log('connected')
+    function getClientName(){
+        var ID = (socket.id).toString().substr(0, 8);
+        return config.defaultPlayerName+"-"+ID
+    }
     connections++;
-    var ID = (socket.id).toString().substr(0, 8);
 //    socket.on('message', function (msg) {
 //     console.log('message')
 //     console.log(msg)
 //
 //    });
     socket.on('createRoom',function(data){
+        console.log(socket.clients)
         var roomsCount=Object.keys(rooms).length
-        console.log(config.maxRoomsLimit)
-        console.log(roomsCount)
+//        console.log(config.maxRoomsLimit)
+//        console.log(roomsCount)
         if(roomsCount<+config.maxRoomsLimit){
             if(data.name&&!rooms[data.name]){
-                rooms[data.name]=true
-                console.log(rooms)
+                rooms[data.name]={roomName:data.name, host:getClientName(), playersCount:1,created:new Date().getTime()}
                 console.log('create')
                 socket.json.send({'event': 'roomCreatedSuccess'})
             }else{
@@ -30,12 +34,16 @@ io.sockets.on('connection', function (socket) {
         }
 
     })
+    socket.on('getAllRooms',function(data){
+        console.log(rooms)
+        socket.json.send({'event': 'gamesList', rooms : rooms})
+    })
     socket.on('disconnect', function () {
         console.log('disconect')
         connections--;
     });
     var time = (new Date).toLocaleTimeString();
-    socket.json.send({'event': 'connected', 'name': config.defaultPlayerName+"-"+ID, 'time': time});
+    socket.json.send({'event': 'connected', 'name': getClientName(), 'time': time});
 //    socket.broadcast.json.send({'event': 'userJoined', 'name': playerString+connections, 'time': time});
 });
 console.log('start')

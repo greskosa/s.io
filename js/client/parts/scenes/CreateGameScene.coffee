@@ -8,6 +8,8 @@ define([
           super(screen)
           @click = @tap =  (data) ->
             console.log('3333')
+          @addTransparentBg()
+          @loadingWait()
 
       loadingWait:()->
          textMessage='Loading. Please wait...'
