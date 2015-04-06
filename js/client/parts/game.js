@@ -19,6 +19,10 @@ define([
                    //change current scene
                    this.scenesManager.goToScene('StartScene');
                }
+               this.connect2Room=function(room){
+                   this.socket.emit('switchRoom',room.roomName)
+               }.bind(this)
+
                this.goToCreateGameScene=function(){
                    var roomName=prompt('Enter name of room:')
                    if(roomName!=null){
@@ -36,8 +40,16 @@ define([
                    this.joinGameScene = this.scenesManager.createScene('JoinGameScene');
                    this.scenesManager.goToScene('JoinGameScene');
                    this.socket.emit('getAllRooms')
-
+                   this.joinGameScene.connect2Room=this.connect2Room
                }
+
+
+               this.startGame=function(){
+                   console.log('Start game')
+//                   this.joinGameScene = this.scenesManager.createScene('GameScene');
+//                   this.scenesManager.goToScene('GameScene');
+               }
+
                this.goToStartScene()
 
         }

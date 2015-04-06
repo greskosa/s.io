@@ -14,7 +14,7 @@ define([
                       setTimeout(()->
                           game.goToCreateGameScene()
                       ,2500)
-                  when "roomCreatedSuccess" then game.goToStartScene()
+                  when "roomCreatedSuccess" then game.createGameScene.waitingOtherPlayer()
                   when "maxRoomsLimit"
                       game.createGameScene.changeText('Max limit of rooms was reached. Try later.')
                       setTimeout(()->
@@ -22,7 +22,16 @@ define([
                       ,2500)
                   when "gamesList"
                     game.joinGameScene.renderAvailableRooms(msg.rooms)
+
+                  when "connectCancel"
+                    alert(msg.msg)
            );
+          socket.on('startGame',  (msg)->
+              game.startGame()
+          )
+          socket.on('updateRoomsList',  (msg)->
+            game.joinGameScene.renderAvailableRooms(msg.rooms) if game.joinGameScene
+          )
         )
       ,(err)->
         game.startScene.addFailedStageUi('Connection problem, try later.')

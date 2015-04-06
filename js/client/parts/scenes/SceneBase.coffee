@@ -48,7 +48,7 @@ define([
       isPaused:()->
           return @pausedCustom;
 
-      addText:(text,options,position)->
+      addText:(text,options,position,callback)->
           text = new PIXI.Text(text, options);
           text.position.x=position.x;
           text.position.y=position.y;
@@ -57,6 +57,10 @@ define([
           text.anchor.y = 0.5;
           text.scale.x = @scale.scaleX
           text.scale.y = @scale.scaleY+0.1 #//#hard fix
+          if callback
+            text.buttonMode = true;
+            text.interactive = true;
+            text.mouseup = text.touchend=callback
           @addChild.call(@,text);
           return text
 
@@ -68,7 +72,27 @@ define([
           @addChild.call(@,bg);
 
 
-        addButton:(imgDefault,imgDown,imgOver,position,callback,context)->
+      addPreloader:()->
+          texture = PIXI.Texture.fromImage("imgs/preloader.png");
+          console.log(texture)
+          @preloader=new PIXI.TilingSprite(texture,128,128)
+          @preloader.anchor.x = 0.5;
+          @preloader.anchor.y = 0.5;
+          console.log @
+          console.log(@screen)
+          @preloader.position.x = @size.width/2;
+          @preloader.position.y = @size.height/2+150;
+          @addChild.call(@,@preloader);
+          @addPreloaderUpdate()
+
+      addPreloaderUpdate:()->
+          if !@currentPreloaderFrame||@currentPreloaderFrame>9 then @currentPreloaderFrame=0
+          @onUpdate(()=>
+            @preloader.tilePosition.x-=128
+            @currentPreloaderFrame++
+          )
+
+      addButton:(imgDefault,imgDown,imgOver,position,callback,context)->
             self=this
 #            // create some textures from an image path
             textureButton= PIXI.Texture.fromImage(imgDefault);
