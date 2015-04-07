@@ -10,25 +10,8 @@ define([
       constructor:(screen)->
           super(screen)
           @addBattleField()
-          return
-#          @hitArea = new PIXI.Rectangle(0, 0, @getGameFieldSize(), @getGameFieldSize());
-#          @interactive = true;
-#          @buttonMode = true;
-#          graphics = new PIXI.Graphics();
-#
-#          graphics.beginFill(0xFFFF00);
-#
-##      // set the line style to have a width of 5 and set the color to red
-#          graphics.lineStyle(5, 0xFF0000);
-#
-##      // draw a rectangle
-#          graphics.drawRect(@getPaddingX(), @getPaddingY(), @getGameFieldSize(), @getGameFieldSize());
-#          graphics.drawRect(@getGameFieldSize()+@getPaddingX(2), @getPaddingY(), @getGameFieldSize(), @getGameFieldSize());
-#
-#          @addChild(graphics);
+          @addShips()
 
-#          @addTransparentBg()
-#          @loadingWait()
 
 
       addBattleField:()->
@@ -56,9 +39,61 @@ define([
 
 
       clickHandler:(data)->
-          alert 1
           newPosition = data.getLocalPosition(this.parent);
           console.log(newPosition)
+
+      addShips:()->
+        @oneShip('./imgs/ship4.png',240,65)
+
+      oneShip:(src,width,height)->
+        self=@
+        texture= PIXI.Texture.fromImage(src);
+        ship = new PIXI.TilingSprite(texture,width,height);
+        #        ship.anchor.x = 0.5;
+        #        ship.anchor.y = 0.5;
+        #        ship.position.x = 0;
+        #        ship.position.y = 0;
+        #        ship.tilePosition.y=0
+        #        ship.tilePosition.x=0
+        ship.mousedown = ship.touchstart = (data)->
+          @data = data
+          @alpha = 0.8
+          @dragging = true
+          @sx = @data.getLocalPosition(ship).x;
+          @sy = @data.getLocalPosition(ship).y;
+
+        ship.mouseup = ship.mouseupoutside = ship.touchend = ship.touchendoutside = (data)->
+          this.alpha = 1
+          this.dragging = false;
+          this.data = null;
+
+
+        ship.buttonMode = true;
+        ship.interactive = true;
+        ship.mousemove = ship.touchmove = (data)->
+      			self.shipHandlerMove.call(@,self,data,height)
+        @addChild(ship)
+
+      shipHandlerMove:(context,eventData,height)->
+#        console.log(@)
+        if(@dragging)
+            @position.x = @data.getLocalPosition(@parent).x - @sx
+            @position.y = @data.getLocalPosition(@parent).y - @sy
+            console.log(height)
+            if context.isShipLocationVaild(eventData)
+              console.log('1')
+              @tilePosition.y=height
+            else
+              console.log('2')
+              @tilePosition.y=height*2
+
+#        console.log @
+#        @tilePosition.y=height
+
+      isShipLocationVaild:(eventData)->
+        position=eventData.getLocalPosition(@parent)
+        console.log position
+        return position.x>232&&position.y>128&&position.x<602&&position.y<682
 
     return GameScene
 
