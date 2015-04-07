@@ -25,12 +25,16 @@ io.sockets.on('connection', function (socket) {
         socket.roomName=roomName
 
         rooms[roomName].playersCount++
-        if (rooms[roomName].playersCount==config.maxPlayersLimit)
-            io.sockets.emit('updateRoomsList',{rooms:rooms});
+        console.log(roomName)
+        console.log(rooms[roomName].playersCount)
+        console.log(config.maxPlayersLimit)
+        io.sockets.emit('updateRoomsList',{rooms:rooms});
+
+        if (+rooms[roomName].playersCount==+config.maxPlayersLimit){
             console.log('START GAME')
             rooms[roomName].connectedPlayer=getClientName(socket.id)
             io.sockets["in"](roomName).emit('startGame')
-
+        }
     }
 
     function clearRooms(socket){
@@ -40,7 +44,7 @@ io.sockets.on('connection', function (socket) {
         if(!Object.keys(rooms).length)
             return
 //        console.log(rooms)
-        console.log(io.sockets)
+//        console.log(io.sockets)
         for(var prop in rooms){
             currentPlayerName=getClientName(socket.id)
             if(rooms[prop].host!=currentPlayerName)
@@ -68,7 +72,6 @@ io.sockets.on('connection', function (socket) {
                 rooms[data.name]={roomName:data.name, host:getClientName(), playersCount:0,created:new Date().getTime()}
                 connectPlayer(data.name,socket)
                 socket.json.send({'event': 'roomCreatedSuccess'})
-                socket.broadcast.emit('updateRoomsList',{rooms:rooms});
             }else{
                 console.log('no create')
                 socket.json.send({'event': 'roomNameNoAvailable'})

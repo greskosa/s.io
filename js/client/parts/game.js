@@ -46,8 +46,8 @@ define([
 
                this.startGame=function(){
                    console.log('Start game')
-//                   this.joinGameScene = this.scenesManager.createScene('GameScene');
-//                   this.scenesManager.goToScene('GameScene');
+                   this.gameScene = this.scenesManager.createScene('GameScene');
+                   this.scenesManager.goToScene('GameScene');
                }
 
                this.goToStartScene()

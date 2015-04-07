@@ -28,12 +28,13 @@ define([
         for child in @roomsInfo
             console.log('111')
             @removeChild(child)
+        @roomsInfo=[]
 
       renderRoom:(room,count)->
-        @roomsInfo.push(@addText(room.roomName,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:200,y:100+count*50},()=>@connect2Room(room)))
-        @roomsInfo.push(@addText(room.host,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:400,y:100+count*50},()=>@connect2Room(room)))
-        @roomsInfo.push(@addText(@getTime(room.created),{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:600,y:100+count*50},()=>@connect2Room(room)))
-        @roomsInfo.push(@addText(room.playersCount+"/"+config.maxPlayersLimit,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:800,y:100+count*50},()=>@connect2Room(room)))
+        @roomsInfo.push(@addText(room.roomName,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:200,y:100+count*50},()=>@connecting(room)))
+        @roomsInfo.push(@addText(room.host,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:400,y:100+count*50},()=>@connecting(room)))
+        @roomsInfo.push(@addText(@getTime(room.created),{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:600,y:100+count*50},()=>@connecting(room)))
+        @roomsInfo.push(@addText(room.playersCount+"/"+config.maxPlayersLimit,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:800,y:100+count*50},()=>@connecting(room)))
 
       getTime:(created)->
         date=new Date(created)
@@ -44,6 +45,18 @@ define([
 
       connect2Room:(room)->
         console.error('Must be implemented in Game.js')
+
+
+      connecting:(room)->
+        textMessage='Connecting to the room...'
+        if(!@text)
+          @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
+        else
+          @text.setText(textMessage)
+        @addPreloader()
+        setTimeout(()=>
+          @connect2Room(room)
+        ,2000)
 
     return JoinGameScene
 

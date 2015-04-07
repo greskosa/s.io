@@ -1,6 +1,6 @@
 define([
-    'pixijs','Scene','StartScene','CreateGameScene','JoinGameScene'
-],  (PIXI,Scene,StartScene,CreateGameScene,JoinGameScene)->
+    'pixijs','Scene','StartScene','CreateGameScene','JoinGameScene','GameScene'
+],  (PIXI,Scene,StartScene,CreateGameScene,JoinGameScene,GameScene)->
 
   class ScenesManager
     scenes:{}
@@ -45,6 +45,7 @@ define([
         when 'StartScene' then  scene = new StartScene(@screen);
         when 'CreateGameScene' then scene = new CreateGameScene(@screen);
         when 'JoinGameScene' then scene = new JoinGameScene(@screen);
+        when 'GameScene' then scene = new GameScene(@screen);
         else
           scene=new Scene(@screen)
       @scenes[id] = scene;
