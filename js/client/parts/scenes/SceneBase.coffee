@@ -60,7 +60,7 @@ define([
           if callback
             text.buttonMode = true;
             text.interactive = true;
-            text.mouseup = text.touchend=callback
+            text.mouseup = text.tap=callback
           @addChild.call(@,text);
           return text
 
@@ -85,11 +85,22 @@ define([
           @addChild.call(@,@preloader);
           @addPreloaderUpdate()
 
+      removeText:()->
+        console.log @
+        @removeChild(@text)
+        @text=null
+
+      removePreloader:()->
+        @removeChild(@preloader)
+        @preloader=null
+
+
       addPreloaderUpdate:()->
           if !@currentPreloaderFrame||@currentPreloaderFrame>9 then @currentPreloaderFrame=0
           @onUpdate(()=>
-            @preloader.tilePosition.x-=128
-            @currentPreloaderFrame++
+            if(@preloader)
+              @preloader.tilePosition.x-=128
+              @currentPreloaderFrame++
           )
 
       addButton:(imgDefault,imgDown,imgOver,position,callback,context)->

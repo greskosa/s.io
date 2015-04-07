@@ -58,6 +58,11 @@ define([
           @connect2Room(room)
         ,2000)
 
+      clearConnecting:()=>
+        console.log @
+        @removeText()
+        @removePreloader()
+
     return JoinGameScene
 
 )

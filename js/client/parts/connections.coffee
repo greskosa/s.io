@@ -21,10 +21,12 @@ define([
                           game.goToStartScene()
                       ,2500)
                   when "gamesList"
-                    game.joinGameScene.renderAvailableRooms(msg.rooms)
+                    game.joinGameScene.renderAvailableRooms(msg.rooms) if game.joinGameScene
 
                   when "connectCancel"
+                    game.joinGameScene.clearConnecting() if game.joinGameScene
                     alert(msg.msg)
+
            );
           socket.on('startGame',  (msg)->
               game.startGame()
