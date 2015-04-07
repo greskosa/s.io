@@ -43,9 +43,12 @@ define([
           console.log(newPosition)
 
       addShips:()->
-        @oneShip('./imgs/ship4.png',240,65)
+        @oneShip('./imgs/ship4.png',240,65,{x:750,y:100})
+        @oneShip('./imgs/ship3.png',175,65,{x:750,y:200})
+        @oneShip('./imgs/ship2.png',123,65,{x:750,y:300})
+        @oneShip('./imgs/ship1.png',65,65,{x:750,y:400})
 
-      oneShip:(src,width,height)->
+      oneShip:(src,width,height,position)->
         self=@
         texture= PIXI.Texture.fromImage(src);
         ship = new PIXI.TilingSprite(texture,width,height);
@@ -66,10 +69,12 @@ define([
           this.alpha = 1
           this.dragging = false;
           this.data = null;
-
+          @tilePosition.y=0
 
         ship.buttonMode = true;
         ship.interactive = true;
+        ship.position.x = position.x;
+        ship.position.y = position.y;
         ship.mousemove = ship.touchmove = (data)->
       			self.shipHandlerMove.call(@,self,data,height)
         @addChild(ship)
