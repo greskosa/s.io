@@ -24,6 +24,7 @@ define([
         field.mousedown=field.tap= @clickHandler
         field.position.x=@getPaddingX()
         field.position.y=@getPaddingY()
+        @bf=field
         @addChild(field)
 
       changeText:(text)->
@@ -54,26 +55,15 @@ define([
         self=@
         texture= PIXI.Texture.fromImage(src);
         ship = new PIXI.TilingSprite(texture,width,height);
-        ship.height = 65;
-
-        #        ship.anchor.x = 0.5;
-        #        ship.anchor.y = 0.5;
-        #        ship.position.x = 0;
-        #        ship.position.y = 0;
-        #        ship.tilePosition.y=0
-        #        ship.tilePosition.x=0
         ship.mousedown = ship.touchstart = (data)->
           self.choosenShip=@
           @data = data
           @alpha = 0.8
           @dragging = true
-          @sx = @data.getLocalPosition(ship).x;
-          @sy = @data.getLocalPosition(ship).y;
-        ship.mouseup = ship.mouseupoutside = ship.touchend = ship.touchendoutside = (data)->
+        ship.mouseup = ship.mouseupoutside = ship.touchend  = (data)->
           this.alpha = 1
           this.dragging = false;
           this.data = null;
-          @tilePosition.y=0
         ship.anchor.x = 0.5;
         ship.anchor.y = 0.5;
         ship.buttonMode = true;
@@ -81,30 +71,35 @@ define([
         ship.position.x = position.x;
         ship.position.y = position.y;
         ship.mousemove = ship.touchmove = (data)->
-      			self.shipHandlerMove.call(@,self,data,height)
+      			self.shipHandlerMove.call(@,self,data)
         @addChild(ship)
 
-      shipHandlerMove:(context,eventData,height)->
-#        console.log(@)
+      shipHandlerMove:(classContext,eventData)->
         if(@dragging)
-            @position.x = @data.getLocalPosition(@parent).x - @sx
-            @position.y = @data.getLocalPosition(@parent).y - @sy
-            console.log(height)
-            if context.isShipLocationVaild(eventData)
-              console.log('1')
-              @tilePosition.y=height
-            else
-              console.log('2')
-              @tilePosition.y=height*2
+            classContext.validateShip.call(@,classContext,eventData)
 
-#        console.log @
-#        @tilePosition.y=height
+      validateShip:(classContext,eventData)->
+        if(eventData)
+          @position.x = eventData.global.x
+          @position.y = eventData.global.y
+        if classContext.isValidShipLocation.call(@,classContext,eventData)
+          @tilePosition.y=@height
+        else
+          @tilePosition.y=@height*2
 
-      isShipLocationVaild:(eventData)->
-        position=eventData.getLocalPosition(@parent)
-        console.log position
-        return position.x>232&&position.y>128&&position.x<602&&position.y<682
+      isValidShipLocation:(classContext)->
+        return classContext.isInBattleField.call(@)
 
+      isInBattleField:()->
+#        if eventData
+#          @currentPosition=eventData.global
+        xParam= if !@orient then @width else @height
+        yParam= if !@orient then @height else @width
+        xBorderLeft=103+xParam*0.45
+        yBorderUp=103+yParam*0.45
+        yBorderRight=703-xParam*0.45
+        yBorderDown=703-yParam*0.45
+        return @position.x>xBorderLeft&&@position.y>yBorderUp&&@position.x<yBorderRight&&@position.y<yBorderDown
 
       addRotatingControl:()->
           textureLeft= PIXI.Texture.fromImage('./imgs/rotate-arrow-left.png');
@@ -125,18 +120,44 @@ define([
           buttonRight.anchor.x = 0.5;
           buttonRight.anchor.y = 0.5;
           buttonRight.click = buttonRight.tap =  (data) =>
-            if !@choosenShip
-              return
-            @choosenShip.rotation += Math.PI/2;
+            @handleRotateRight()
 
           buttonLeft.click = buttonLeft.tap =  (data) =>
-            if !@choosenShip
-              return
-            @choosenShip.rotation -= Math.PI/2;
+           @handleRotateLeft()
 
           @addChild(buttonLeft)
           @addChild(buttonRight)
 
+      handleRotateRight:()->
+        if !@choosenShip
+          return
+        if(@choosenShip.rotation>4)
+          @choosenShip.rotation=0
+        else
+          @choosenShip.rotation += Math.PI/2;
+        console.log 2
+        setShipOrientation.call(@choosenShip)
+        @validateShip.call(@choosenShip,@)
+
+
+      handleRotateLeft:()->
+        if !@choosenShip
+           return
+        if(@choosenShip.rotation<-4)
+           @choosenShip.rotation=0
+        else
+           @choosenShip.rotation -= Math.PI/2;
+        console.log 1
+        setShipOrientation.call(@choosenShip)
+        @validateShip.call(@choosenShip,@)
+
+
+      setShipOrientation=()->
+        rotatetionABS=Math.abs(parseInt(@rotation))
+        if rotatetionABS==1||rotatetionABS==4
+            @orient=1
+            return
+        @orient=0
 
     return GameScene
 
