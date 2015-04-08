@@ -48,18 +48,21 @@ define([
 
 
       connecting:(room)->
+        if(@clicked)
+         return
         textMessage='Connecting to the room...'
         if(!@text)
           @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
         else
           @text.setText(textMessage)
         @addPreloader()
+        @clicked=true
         setTimeout(()=>
           @connect2Room(room)
         ,2000)
 
       clearConnecting:()=>
-        console.log @
+        @clicked=false
         @removeText()
         @removePreloader()
 
