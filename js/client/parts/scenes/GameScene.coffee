@@ -7,6 +7,7 @@ define([
       fieldPaddingX:40
       fieldPaddingY:40
       choosenShip:null
+      cellSize:60
 
       constructor:(screen)->
           super(screen)
@@ -55,15 +56,6 @@ define([
         self=@
         texture= PIXI.Texture.fromImage(src);
         ship = new PIXI.TilingSprite(texture,width,height);
-        ship.mousedown = ship.touchstart = (data)->
-          self.choosenShip=@
-          @data = data
-          @alpha = 0.8
-          @dragging = true
-        ship.mouseup = ship.mouseupoutside = ship.touchend  = (data)->
-          this.alpha = 1
-          this.dragging = false;
-          this.data = null;
         ship.anchor.x = 0.5;
         ship.anchor.y = 0.5;
         ship.buttonMode = true;
@@ -72,11 +64,26 @@ define([
         ship.position.y = position.y;
         ship.mousemove = ship.touchmove = (data)->
       			self.shipHandlerMove.call(@,self,data)
+
+        ship.mousedown = ship.touchstart = (data)->
+          self.shipHandlerClickStart.call(@,self)
+        ship.mouseup = ship.mouseupoutside = ship.touchend  = (data)->
+          self.shipHandlerClickEnd.call(@,self)
         @addChild(ship)
 
       shipHandlerMove:(classContext,eventData)->
         if(@dragging)
             classContext.validateShip.call(@,classContext,eventData)
+
+      shipHandlerClickStart:(classContext)->
+        classContext.choosenShip=@
+        @alpha = 0.8
+        @dragging = true
+
+      shipHandlerClickEnd:(classContext)->
+        this.alpha = 1
+        this.dragging = false;
+        classContext.setShipCell.call(@,classContext)
 
       validateShip:(classContext,eventData)->
         if(eventData)
@@ -153,11 +160,23 @@ define([
 
 
       setShipOrientation=()->
+#        ship context
         rotatetionABS=Math.abs(parseInt(@rotation))
         if rotatetionABS==1||rotatetionABS==4
             @orient=1
             return
         @orient=0
+
+      setShipCell:(classContext)->
+#        ship context
+        console.log @position.x
+        console.log @width/2
+        calculate=(@position.x-103-@width)/(classContext.cellSize)
+        cell= Math.ceil(calculate)
+        console.log(cell)
+
+
+
 
     return GameScene
 
