@@ -6,11 +6,13 @@ define([
       gameFieldSize:450
       fieldPaddingX:40
       fieldPaddingY:40
+      choosenShip:null
 
       constructor:(screen)->
           super(screen)
           @addBattleField()
           @addShips()
+          @addRotatingControl()
 
 
 
@@ -52,6 +54,8 @@ define([
         self=@
         texture= PIXI.Texture.fromImage(src);
         ship = new PIXI.TilingSprite(texture,width,height);
+        ship.height = 65;
+
         #        ship.anchor.x = 0.5;
         #        ship.anchor.y = 0.5;
         #        ship.position.x = 0;
@@ -59,18 +63,19 @@ define([
         #        ship.tilePosition.y=0
         #        ship.tilePosition.x=0
         ship.mousedown = ship.touchstart = (data)->
+          self.choosenShip=@
           @data = data
           @alpha = 0.8
           @dragging = true
           @sx = @data.getLocalPosition(ship).x;
           @sy = @data.getLocalPosition(ship).y;
-
         ship.mouseup = ship.mouseupoutside = ship.touchend = ship.touchendoutside = (data)->
           this.alpha = 1
           this.dragging = false;
           this.data = null;
           @tilePosition.y=0
-
+        ship.anchor.x = 0.5;
+        ship.anchor.y = 0.5;
         ship.buttonMode = true;
         ship.interactive = true;
         ship.position.x = position.x;
@@ -99,6 +104,39 @@ define([
         position=eventData.getLocalPosition(@parent)
         console.log position
         return position.x>232&&position.y>128&&position.x<602&&position.y<682
+
+
+      addRotatingControl:()->
+          textureLeft= PIXI.Texture.fromImage('./imgs/rotate-arrow-left.png');
+          textureRight= PIXI.Texture.fromImage('./imgs/rotate-arrow-right.png');
+          buttonLeft = new PIXI.Sprite(textureLeft);
+          buttonRight = new PIXI.Sprite(textureRight);
+          buttonLeft.buttonMode = true;
+          buttonRight.buttonMode = true;
+          #            // make the button interactive..
+          buttonLeft.interactive = true;
+          buttonRight.interactive = true;
+          buttonLeft.position.x = @size.width-200;
+          buttonLeft.position.y = @size.height-100;
+          buttonRight.position.x = @size.width-60;
+          buttonRight.position.y = @size.height-100;
+          buttonLeft.anchor.x = 0.5;
+          buttonLeft.anchor.y = 0.5;
+          buttonRight.anchor.x = 0.5;
+          buttonRight.anchor.y = 0.5;
+          buttonRight.click = buttonRight.tap =  (data) =>
+            if !@choosenShip
+              return
+            @choosenShip.rotation += Math.PI/2;
+
+          buttonLeft.click = buttonLeft.tap =  (data) =>
+            if !@choosenShip
+              return
+            @choosenShip.rotation -= Math.PI/2;
+
+          @addChild(buttonLeft)
+          @addChild(buttonRight)
+
 
     return GameScene
 
