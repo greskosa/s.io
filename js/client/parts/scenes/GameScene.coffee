@@ -39,6 +39,7 @@ define([
           @addBattleField()
           @addShips()
           @addRotatingControl()
+          @addStartBtn()
           @onUpdate(()=>
               @checkIsAllShipsValid()
           )
@@ -74,16 +75,16 @@ define([
           console.log(newPosition)
 
       addShips:()->
-        @oneShip('./imgs/ship4.png',240,65,{x:850,y:100},4)
-        @oneShip('./imgs/ship3.png',175,65,{x:850,y:200},3)
-        @oneShip('./imgs/ship3.png',175,65,{x:850,y:200},3)
-        @oneShip('./imgs/ship2.png',123,65,{x:850,y:300},2)
-        @oneShip('./imgs/ship2.png',123,65,{x:850,y:300},2)
-        @oneShip('./imgs/ship2.png',123,65,{x:850,y:300},2)
-        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
+        @oneShip('./imgs/ship4.png',240,65,{x:860,y:200},4)
+        @oneShip('./imgs/ship3.png',175,65,{x:860,y:300},3)
+        @oneShip('./imgs/ship3.png',175,65,{x:860,y:300},3)
+        @oneShip('./imgs/ship2.png',123,65,{x:860,y:400},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:860,y:400},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:860,y:400},2)
+        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
 
       oneShip:(src,width,height,position,deckCount)->
         self=@
@@ -133,7 +134,6 @@ define([
         if @dragging
           @alpha = 1
           @dragging = false;
-          console.log @
           if @valid
             console.log('VALID!')
             classContext.setShipCell.call(@,classContext)
@@ -143,7 +143,6 @@ define([
           @position.x = eventData.global.x
           @position.y = eventData.global.y
         isV=classContext.isValidShipLocation.call(@,classContext,eventData)
-        console.log isV
         if isV
           @tilePosition.y=@height
           @valid=true
@@ -225,6 +224,25 @@ define([
 
           @addChild(buttonLeft)
           @addChild(buttonRight)
+
+      addStartBtn:()->
+          self=@
+          texture= PIXI.Texture.fromImage('./imgs/battle.png');
+          btn = new PIXI.Sprite(texture);
+          btn.alpha= 0.6
+          btn.disabled= true
+          btn.buttonMode = true;
+          #            // make the button interactive..
+          btn.interactive = true;
+          btn.position.x = @size.width-150;
+          btn.position.y = 90
+          btn.anchor.x = 0.5;
+          btn.anchor.y = 0.5;
+          btn.click = btn.tap =  (data) ->
+            if !@disabled
+              self.startGame()
+          @startBtn=btn
+          @addChild(btn)
 
       handleRotateRight:()->
         if !@choosenShip
@@ -319,8 +337,16 @@ define([
           
       checkIsAllShipsValid:()->
         if @shipSum==20
-          console.log("GO")
+          @startBtn.disabled=false
+          @startBtn.alpha=1
         else
+          @startBtn.disabled=true
+          @startBtn.alpha=0.6
+
+      startGame:()->
+        console.log('yeap')
+
+
 
 
 
