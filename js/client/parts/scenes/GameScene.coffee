@@ -6,6 +6,7 @@ define([
       gameFieldSize:450
       fieldPaddingX:40
       fieldPaddingY:40
+      shipSum:0
       choosenShip:null
       axisXFieldStartPos:()->
         return @fieldPaddingX+63
@@ -38,13 +39,15 @@ define([
           @addBattleField()
           @addShips()
           @addRotatingControl()
-
-
+          @onUpdate(()=>
+              @checkIsAllShipsValid()
+          )
 
       addBattleField:()->
         texture= PIXI.Texture.fromImage('./imgs/battlefield.png');
         field = new PIXI.Sprite(texture);
         field.buttonMode = true;
+        field.zIndex = 0;
         field.interactive = true;
         field.mousedown=field.tap= @clickHandler
         field.position.x=@getPaddingX()
@@ -72,18 +75,23 @@ define([
 
       addShips:()->
         @oneShip('./imgs/ship4.png',240,65,{x:850,y:100},4)
-        @oneShip('./imgs/ship4.png',240,65,{x:850,y:100},4)
+        @oneShip('./imgs/ship3.png',175,65,{x:850,y:200},3)
         @oneShip('./imgs/ship3.png',175,65,{x:850,y:200},3)
         @oneShip('./imgs/ship2.png',123,65,{x:850,y:300},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:850,y:300},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:850,y:300},2)
+        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
         @oneShip('./imgs/ship1.png',65,65,{x:850,y:400},1)
 
       oneShip:(src,width,height,position,deckCount)->
         self=@
         texture= PIXI.Texture.fromImage(src);
         ship = new PIXI.TilingSprite(texture,width,height);
+        ship.zIndex = 1;
         ship.anchor.x = 0.5;
         ship.anchor.y = 0.5;
-        ship.buttonMode = true;
         ship.interactive = true;
         ship.position.x = position.x;
         ship.position.y = position.y;
@@ -101,23 +109,42 @@ define([
         if(@dragging)
             classContext.validateShip.call(@,classContext,eventData)
 
+
+      updateLayersOrder: () ->
+          @children.sort((a,b) ->
+              zIndex1 = a.zIndex || 0;
+              zIndex2 = b.zIndex || 0;
+              return  zIndex1-zIndex2
+          );
+          console.log(@children)
+
+
       shipHandlerClickStart:(classContext)->
+#        ship context
+        @zIndex=2
+#        classContext.updateLayersOrder()
         classContext.clearPreviousShipPosition.call(@,classContext)
         classContext.choosenShip=@
         @alpha = 0.8
         @dragging = true
 
       shipHandlerClickEnd:(classContext)->
-        this.alpha = 1
-        this.dragging = false;
-        if @valid
-          classContext.setShipCell.call(@,classContext)
+#        ship context
+        if @dragging
+          @alpha = 1
+          @dragging = false;
+          console.log @
+          if @valid
+            console.log('VALID!')
+            classContext.setShipCell.call(@,classContext)
 
       validateShip:(classContext,eventData)->
         if(eventData)
           @position.x = eventData.global.x
           @position.y = eventData.global.y
-        if classContext.isValidShipLocation.call(@,classContext,eventData)
+        isV=classContext.isValidShipLocation.call(@,classContext,eventData)
+        console.log isV
+        if isV
           @tilePosition.y=@height
           @valid=true
         else
@@ -144,14 +171,9 @@ define([
 
       validateSpaceBeetweenShips:(classContext)->
 #        ship context
-#        console.log @
         cells=classContext.getShipCells.call(@,classContext)
         isValid=true
         count=@deckCount
-
-        console.log('XXXXXXXXXXXXXXXXXXXX')
-
-
         while(count>0)
           x10=if classContext.validateCell(cells.cellX-1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX-1] else 0
           x11=if classContext.validateCell(cells.cellX,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX] else 0
@@ -164,12 +186,6 @@ define([
           x20=if classContext.validateCell(cells.cellX-1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX-1] else 0
           x21=if classContext.validateCell(cells.cellX,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX] else 0
           x22=if classContext.validateCell(cells.cellX+1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX+1] else 0
-#          console.log(x00+"|"+x01+"|"+x02)
-#          console.log(x10+"|"+x11+"|"+x12)
-#          console.log(x20+"|"+x21+"|"+x22)
-#          console.log('cycle')
-#          console.log(cells.cellY)
-#          console.log(cells.cellX)
           if x00==1||x01==1||x02==1||
              x10==1||x11==1||x12==1||
              x20==1||x21==1||x22==1
@@ -181,7 +197,6 @@ define([
             cells.cellX-=1
 
           count--
-        console.log('VALIDATE!')
         return isValid
 
       addRotatingControl:()->
@@ -268,8 +283,8 @@ define([
         yParam=if !@orient then @height/2 else @width/2
         diffX=if !@orient then @deckCount-1 else 0
         diffY=if @orient then @deckCount-1 else 0
-        clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos()+xParam
-        clearPositionY=classContext.cellSize*(cellY-diffY)+classContext.axisYFieldStartPos()+yParam
+        clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos()+xParam-2 #2px fix middle
+        clearPositionY=classContext.cellSize*(cellY-diffY)+classContext.axisYFieldStartPos()+yParam-2 #2px fix middle
         @position.x=clearPositionX
         @position.y=clearPositionY
 
@@ -280,6 +295,7 @@ define([
         if !@shipLocation
           console.log('create')
           @shipLocation=[]
+        classContext.shipSum+=count
         while(count>0)
           classContext.shipMap[cellY][cellX]=1
           @shipLocation.push({x:cellX,y:cellY})
@@ -288,13 +304,23 @@ define([
           else
             cellX--
           count--
-        console.log(classContext.shipMap)
+        console.log(classContext.shipSum)
+#        console.log(classContext.shipMap)
 
       clearPreviousShipPosition:(classContext)->
         if @shipLocation&&@shipLocation.length
           for pos in  @shipLocation
            classContext.shipMap[pos.y][pos.x]=0
           @shipLocation=[]
+          console.log @deckCount
+          classContext.shipSum-=@deckCount
+          console.log(classContext.shipSum)
+          
+          
+      checkIsAllShipsValid:()->
+        if @shipSum==20
+          console.log("GO")
+        else
 
 
 
