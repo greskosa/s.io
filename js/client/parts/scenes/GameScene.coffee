@@ -102,6 +102,7 @@ define([
             classContext.validateShip.call(@,classContext,eventData)
 
       shipHandlerClickStart:(classContext)->
+        classContext.clearPreviousShipPosition.call(@,classContext)
         classContext.choosenShip=@
         @alpha = 0.8
         @dragging = true
@@ -124,7 +125,7 @@ define([
           @tilePosition.y=@height*2
 
       isValidShipLocation:(classContext)->
-        return classContext.isInBattleField.call(@,classContext)
+        return classContext.isInBattleField.call(@,classContext)&&classContext.validateSpaceBeetweenShips.call(@,classContext)
 
       isInBattleField:(classContext)->
 #        ship context
@@ -147,29 +148,38 @@ define([
         cells=classContext.getShipCells.call(@,classContext)
         isValid=true
         count=@deckCount
-        x10=if classContext.validateCell(cells.cellX-1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX-1] else 0
-        x11=if classContext.validateCell(cells.cellX,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX] else 0
-        x12=if classContext.validateCell(cells.cellX+1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX+1] else 0
 
-        x00=if classContext.validateCell(cells.cellX-1,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX-1] else 0
-        x01=if classContext.validateCell(cells.cellX,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX] else 0
-        x02=if classContext.validateCell(cells.cellX+1,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX+1] else 0
+        console.log('XXXXXXXXXXXXXXXXXXXX')
 
-        x20=if classContext.validateCell(cells.cellX-1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX-1] else 0
-        x21=if classContext.validateCell(cells.cellX,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX] else 0
-        x22=if classContext.validateCell(cells.cellX+1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX+1] else 0
 
         while(count>0)
-          console.log('cycle')
+          x10=if classContext.validateCell(cells.cellX-1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX-1] else 0
+          x11=if classContext.validateCell(cells.cellX,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX] else 0
+          x12=if classContext.validateCell(cells.cellX+1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX+1] else 0
+
+          x00=if classContext.validateCell(cells.cellX-1,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX-1] else 0
+          x01=if classContext.validateCell(cells.cellX,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX] else 0
+          x02=if classContext.validateCell(cells.cellX+1,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX+1] else 0
+
+          x20=if classContext.validateCell(cells.cellX-1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX-1] else 0
+          x21=if classContext.validateCell(cells.cellX,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX] else 0
+          x22=if classContext.validateCell(cells.cellX+1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX+1] else 0
+#          console.log(x00+"|"+x01+"|"+x02)
+#          console.log(x10+"|"+x11+"|"+x12)
+#          console.log(x20+"|"+x21+"|"+x22)
+#          console.log('cycle')
+#          console.log(cells.cellY)
+#          console.log(cells.cellX)
           if x00==1||x01==1||x02==1||
              x10==1||x11==1||x12==1||
              x20==1||x21==1||x22==1
             isValid=false
 
           if @orient
-            cells.cellY--
+            cells.cellY-=1
           else
-            cells.cellX--
+            cells.cellX-=1
+
           count--
         console.log('VALIDATE!')
         return isValid
@@ -209,6 +219,7 @@ define([
         else
           @choosenShip.rotation += Math.PI/2;
         setShipOrientation.call(@choosenShip)
+        @clearPreviousShipPosition.call(@choosenShip,@)
         @validateShip.call(@choosenShip,@)
         @setShipCell.call(@choosenShip,@)
 
@@ -221,6 +232,7 @@ define([
         else
            @choosenShip.rotation -= Math.PI/2;
         setShipOrientation.call(@choosenShip)
+        @clearPreviousShipPosition.call(@choosenShip,@)
         @validateShip.call(@choosenShip,@)
         @setShipCell.call(@choosenShip,@)
 
@@ -235,11 +247,11 @@ define([
 
       setShipCell:(classContext)->
 #        ship context
-        if !@valid
-          return
         cells=classContext.getShipCells.call(@,classContext)
-        classContext.setShipInMap.call(@,classContext,cells.cellY,cells.cellX,@deckCount)
         classContext.placeShip.call(@,classContext,cells.cellY,cells.cellX)
+        if !@valid
+            return
+        classContext.setShipInMap.call(@,classContext,cells.cellY,cells.cellX,@deckCount)
 
       getShipCells:(classContext)->
         xParam=if !@orient then @width/2 else @height/2
@@ -268,8 +280,6 @@ define([
         if !@shipLocation
           console.log('create')
           @shipLocation=[]
-        else
-          classContext.clearPreviousShipPosition.call(@,classContext)
         while(count>0)
           classContext.shipMap[cellY][cellX]=1
           @shipLocation.push({x:cellX,y:cellY})
@@ -281,7 +291,7 @@ define([
         console.log(classContext.shipMap)
 
       clearPreviousShipPosition:(classContext)->
-        if @shipLocation.length
+        if @shipLocation&&@shipLocation.length
           for pos in  @shipLocation
            classContext.shipMap[pos.y][pos.x]=0
           @shipLocation=[]
