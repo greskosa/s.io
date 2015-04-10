@@ -27,6 +27,10 @@ io.sockets.on('connection', function (socket) {
         return sum==20
     }
 
+    function fire(socket,game, cells){
+        console.log('FIRE!')
+        console.log(cells)
+    }
     function connectPlayer(roomName,socket){
         console.log('CONNECT')
         var oldRoom=socket.roomName
@@ -121,7 +125,19 @@ io.sockets.on('connection', function (socket) {
             games[roomName].currentPlayer=currentPlayerName
         if(Object.keys(games[roomName]['maps']).length>1){
             console.log('start GAME!!!')
-            io.sockets["in"](roomName).emit('startGame',{currentPlayer:games[roomName].currentPlayer})
+            var roomsClients=io.nsps['/'].adapter.rooms[roomName]
+            console.log(roomsClients)
+            for(var id in roomsClients){
+                var isYourTurn=rooms[roomName].host==getClientName(id)
+                console.log(id)
+                console.log(isYourTurn)
+                io.to(id).emit('startGame', { isYourTurn: isYourTurn });
+            }
+
+//            io.sockets["in"](roomName).forEach(function(eachSocket){
+//                var isYourTurn=rooms[roomName].host==getClientName(eachSocket.id)
+//                eachSocket.emit('startGame',{isYourTurn:isYourTurn})
+//            })
         }
         else{
             console.log('waitOtherPlayerBeforeStart')
@@ -135,6 +151,22 @@ io.sockets.on('connection', function (socket) {
         clearRooms(socket)
         console.log(games)
     });
+    socket.on('fire',function(data){
+        var roomName=data.roomName
+        var cells=data.cells
+        if(!roomName)
+            return console.log('roomname missed')
+        var game=games[roomName]
+        if(!game)
+            return console.log('error')
+        var playerName=getClientName(socket.id)
+        if(playerName!=game.currentPlayer)
+            return 'not your turn'
+        if(!game.maps.hasOwnProperty(playerName))
+            return 'you not in this game'
+        fire(socket,game,cells)
+
+    })
     var time = (new Date).toLocaleTimeString();
     socket.json.send({'event': 'connected', 'name': getClientName(), 'time': time});
 //    socket.broadcast.json.send({'event': 'userJoined', 'name': playerString+connections, 'time': time});

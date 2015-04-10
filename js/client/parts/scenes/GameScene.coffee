@@ -15,6 +15,7 @@ define([
       prepeared4Battle:false
       battleStarted:false
       scaleParams:{x:1,y:1}
+      isYourTurn:false
       gameXPadding:()->
         if !@battleStarted then return 0
         return @cellSize*10+90+@xPicMargin
@@ -87,9 +88,9 @@ define([
 
 
       clickHandler:(data)=>
-          if (@battleStarted)
+          if (@battleStarted&&@isYourTurn)
             cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
-            console.log(cells)
+            @fire({x:cells.cellX,y:cells.cellY})
 
       addShips:()->
         xPos=@size.width-140
@@ -378,6 +379,9 @@ define([
       sendShips:(map)->
         console.error('Must be implemented in Game.js')
 
+      fire:(map)->
+        console.error('Must be implemented in Game.js')
+
       waitOtherPlayerBeforeStart:()->
         @addTransparentBg()
         textMessage='Waiting for the other player...'
@@ -412,7 +416,10 @@ define([
            @audioTheme=null
 
 
-      startGame:()->
+      startGame:(data)->
+        console.log(data)
+        @isYourTurn=data.isYourTurn
+        console.info('IS YOUR TURN '+@isYourTurn)
         @stopTheme()
         @removeTransparentBg()
         @removePreloader()
@@ -434,6 +441,16 @@ define([
          )
         @what2Remove=[]
         @startBtn=null
+
+      missed:()->
+        console.log('MISS!')
+
+      damaged:()->
+        console.log('DAMAGED!')
+
+      kill:()->
+        console.log('KILL')
+
 
 
     return GameScene

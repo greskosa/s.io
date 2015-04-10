@@ -53,8 +53,8 @@ define([
           socket.on('waitOtherPlayerBeforeStart',()->
             game.gameScene.waitOtherPlayerBeforeStart() if game.gameScene
           )
-          socket.on('startGame',()->
-            game.gameScene.startGame() if game.gameScene
+          socket.on('startGame',(data)->
+            game.gameScene.startGame(data) if game.gameScene
           )
         )
       ,(err)->
