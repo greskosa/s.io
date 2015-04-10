@@ -11,6 +11,7 @@ define([
       allShips:[]
       what2Remove:[]
       prepeared4Battle:false
+      battleStarted:false
       scaleParams:{x:1,y:1}
       axisXFieldStartPos:()->
         return @fieldPaddingX+63
@@ -76,9 +77,10 @@ define([
         return @gameFieldSize
 
 
-      clickHandler:(data)->
-          newPosition = data.getLocalPosition(this.parent);
-          console.log(newPosition)
+      clickHandler:(data)=>
+          if (@battleStarted)
+            cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
+            console.log(cells)
 
       addShips:()->
         xPos=@size.width-140
@@ -304,8 +306,13 @@ define([
       getShipCells:(classContext)->
         xParam=if !@orient then @width/2 else @height/2
         yParam=if !@orient then @height/2 else @width/2
-        calculateX =(@position.x-classContext.axisXFieldStartPos()+xParam)/(classContext.cellSize)
-        calculateY=(@position.y-classContext.axisYFieldStartPos()+yParam)/(classContext.cellSize)
+        classContext.getCells({x:@position.x,y:@position.y},xParam,yParam)
+
+      getCells:(position,xParam,yParam)->
+        xParam=xParam||0
+        yParam=yParam||0
+        calculateX =(position.x-@axisXFieldStartPos()+xParam)/(@cellSize)
+        calculateY=(position.y-@axisYFieldStartPos()+yParam)/(@cellSize)
         cellX= Math.round(calculateX)-1
         cellY= Math.round(calculateY)-1
         return {cellX:cellX,cellY:cellY}
@@ -373,7 +380,7 @@ define([
 
       playTheme:()->
         console.log('play')
-#        return
+        return
         try
           audio = new Audio();
           audio.src='./audio/hespirate.mp3'
@@ -403,6 +410,7 @@ define([
         @removeChild(@waitingText)
         @removeBtns()
         @scaleParams={x:0.7,y:0.7}
+        @battleStarted=true
         @scale.set(@scaleParams.x, @scaleParams.y);
 
       makeNormalShipCollor:()->
