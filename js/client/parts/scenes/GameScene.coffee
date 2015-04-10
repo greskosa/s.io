@@ -352,10 +352,10 @@ define([
       waitOtherPlayerBeforeStart:()->
         @addTransparentBg()
         textMessage='Waiting for the other player...'
-        if(!@text)
-          @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
+        if(!@waitingText)
+          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
         else
-           @text.setText(textMessage)
+          @waitingText.setText(textMessage)
         @addPreloader()
 
       playTheme:()->
@@ -383,6 +383,9 @@ define([
 
       startGame:()->
         @stopTheme()
+        @removeTransparentBg()
+        @removePreloader()
+        @removeChild(@waitingText)
 
 
 
