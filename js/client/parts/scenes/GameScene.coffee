@@ -6,6 +6,8 @@ define([
       gameFieldSize:450
       fieldPaddingX:40
       fieldPaddingY:40
+      xPicMargin:63
+      yPicMargin:63
       shipSum:0
       choosenShip:null
       allShips:[]
@@ -13,11 +15,15 @@ define([
       prepeared4Battle:false
       battleStarted:false
       scaleParams:{x:1,y:1}
+      gameXPadding:()->
+        if !@battleStarted then return 0
+        return @cellSize*10+90+@xPicMargin
+
       axisXFieldStartPos:()->
-        return @fieldPaddingX+63
+        return @fieldPaddingX+@xPicMargin+@gameXPadding()
 
       axisYFieldStartPos:()->
-        return @fieldPaddingY+63
+        return @fieldPaddingY+@yPicMargin
 
       axisXFieldEndPos:()->
           return @axisXFieldStartPos()+@cellSize*10
@@ -51,15 +57,18 @@ define([
           )
           @playTheme()
 
-      addBattleField:()->
+      addBattleField:(isInterective,x,y)->
+        x=x||@getPaddingX()
+        y=y||@getPaddingY()
         texture= PIXI.Texture.fromImage('./imgs/battlefield.png');
         field = new PIXI.Sprite(texture);
-        field.buttonMode = true;
         field.zIndex = 0;
-        field.interactive = true;
-        field.mousedown=field.tap= @clickHandler
-        field.position.x=@getPaddingX()
-        field.position.y=@getPaddingY()
+        if isInterective
+          field.buttonMode = true;
+          field.interactive = true;
+          field.mousedown=field.tap= @clickHandler
+        field.position.x=x
+        field.position.y=y
         @bf=field
         @addChild(field)
 
@@ -311,8 +320,8 @@ define([
       getCells:(position,xParam,yParam)->
         xParam=xParam||0
         yParam=yParam||0
-        calculateX =(position.x-@axisXFieldStartPos()+xParam)/(@cellSize)
-        calculateY=(position.y-@axisYFieldStartPos()+yParam)/(@cellSize)
+        calculateX =(position.x-@axisXFieldStartPos()*@scaleParams.x+xParam*@scaleParams.x)/(@cellSize*@scaleParams.x)
+        calculateY=(position.y-@axisYFieldStartPos()*@scaleParams.y+yParam*@scaleParams.y)/(@cellSize*@scaleParams.y)
         cellX= Math.round(calculateX)-1
         cellY= Math.round(calculateY)-1
         return {cellX:cellX,cellY:cellY}
@@ -409,8 +418,9 @@ define([
         @removePreloader()
         @removeChild(@waitingText)
         @removeBtns()
-        @scaleParams={x:0.7,y:0.7}
+        @scaleParams={x:0.67,y:0.67}
         @battleStarted=true
+        @addBattleField(true,@axisXFieldStartPos()-@xPicMargin)
         @scale.set(@scaleParams.x, @scaleParams.y);
 
       makeNormalShipCollor:()->
