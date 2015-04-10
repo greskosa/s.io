@@ -9,7 +9,9 @@ define([
       shipSum:0
       choosenShip:null
       allShips:[]
+      what2Remove:[]
       prepeared4Battle:false
+      scaleParams:{x:1,y:1}
       axisXFieldStartPos:()->
         return @fieldPaddingX+63
 
@@ -230,7 +232,8 @@ define([
 
           buttonLeft.click = buttonLeft.tap =  (data) =>
            @handleRotateLeft()
-
+          @what2Remove.push(buttonLeft)
+          @what2Remove.push(buttonRight)
           @addChild(buttonLeft)
           @addChild(buttonRight)
 
@@ -253,6 +256,7 @@ define([
               self.makeNormalShipCollor()
               self.sendShips(self.shipsMap)
           @startBtn=btn
+          @what2Remove.push(@startBtn)
           @addChild(btn)
 
       handleRotateRight:()->
@@ -333,7 +337,6 @@ define([
           else
             cellX--
           count--
-        console.log(classContext.shipSum)
 #        console.log(classContext.shipsMap)
 
       clearPreviousShipPosition:(classContext)->
@@ -345,8 +348,10 @@ define([
           classContext.shipSum-=@deckCount
           console.log(classContext.shipSum)
           
-          
+
       checkIsAllShipsValid:()->
+        if !@startBtn
+          return
         if @shipSum==20
           @startBtn.disabled=false
           @startBtn.alpha=1
@@ -368,6 +373,7 @@ define([
 
       playTheme:()->
         console.log('play')
+#        return
         try
           audio = new Audio();
           audio.src='./audio/hespirate.mp3'
@@ -384,9 +390,10 @@ define([
 
 
       stopTheme:()->
-       @audioTheme.pause()
-       @audioTheme.currentTime=0
-       @audioTheme=null
+        if @audioTheme
+           @audioTheme.pause()
+           @audioTheme.currentTime=0
+           @audioTheme=null
 
 
       startGame:()->
@@ -394,13 +401,21 @@ define([
         @removeTransparentBg()
         @removePreloader()
         @removeChild(@waitingText)
-        @scale.set(0.5, 0.5);
+        @removeBtns()
+        @scaleParams={x:0.7,y:0.7}
+        @scale.set(@scaleParams.x, @scaleParams.y);
 
       makeNormalShipCollor:()->
         @allShips.forEach((ship)=>
           ship.tilePosition.y=0
         )
 
+      removeBtns:()->
+        @what2Remove.forEach((el)=>
+           @removeChild(el)
+         )
+        @what2Remove=[]
+        @startBtn=null
 
 
     return GameScene
