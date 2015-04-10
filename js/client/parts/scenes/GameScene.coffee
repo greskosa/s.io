@@ -9,6 +9,7 @@ define([
       shipSum:0
       choosenShip:null
       allShips:[]
+      prepeared4Battle:false
       axisXFieldStartPos:()->
         return @fieldPaddingX+63
 
@@ -102,12 +103,15 @@ define([
         ship.position.y = position.y;
         ship.deckCount= deckCount;
         ship.mousemove = ship.touchmove = (data)->
-      			self.shipHandlerMove.call(@,self,data)
+          if !self.prepeared4Battle
+            self.shipHandlerMove.call(@,self,data)
 
         ship.mousedown = ship.touchstart = (data)->
-          self.shipHandlerClickStart.call(@,self)
+          if !self.prepeared4Battle
+            self.shipHandlerClickStart.call(@,self)
         ship.mouseup = ship.mouseupoutside = ship.touchend  = (data)->
-          self.shipHandlerClickEnd.call(@,self)
+          if !self.prepeared4Battle
+            self.shipHandlerClickEnd.call(@,self)
         @allShips.push(ship)
         @addChild(ship)
 
@@ -244,7 +248,8 @@ define([
           btn.anchor.x = 0.5;
           btn.anchor.y = 0.5;
           btn.click = btn.tap =  (data) ->
-            if !@disabled
+            if !@disabled&& !self.prepeared4Battle
+              self.prepeared4Battle=true
               self.makeNormalShipCollor()
               self.sendShips(self.shipsMap)
           @startBtn=btn
@@ -389,6 +394,7 @@ define([
         @removeTransparentBg()
         @removePreloader()
         @removeChild(@waitingText)
+        @scale.set(0.5, 0.5);
 
       makeNormalShipCollor:()->
         @allShips.forEach((ship)=>
