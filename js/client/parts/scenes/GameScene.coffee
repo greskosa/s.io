@@ -21,7 +21,7 @@ define([
         return @axisYFieldStartPos()+@cellSize*10
 
       cellSize:60
-      shipMap:[
+      shipsMap:[
                [0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0],
@@ -42,7 +42,9 @@ define([
           @addStartBtn()
           @onUpdate(()=>
               @checkIsAllShipsValid()
+              @updatePreloader()
           )
+          @playTheme()
 
       addBattleField:()->
         texture= PIXI.Texture.fromImage('./imgs/battlefield.png');
@@ -75,16 +77,17 @@ define([
           console.log(newPosition)
 
       addShips:()->
-        @oneShip('./imgs/ship4.png',240,65,{x:860,y:200},4)
-        @oneShip('./imgs/ship3.png',175,65,{x:860,y:300},3)
-        @oneShip('./imgs/ship3.png',175,65,{x:860,y:300},3)
-        @oneShip('./imgs/ship2.png',123,65,{x:860,y:400},2)
-        @oneShip('./imgs/ship2.png',123,65,{x:860,y:400},2)
-        @oneShip('./imgs/ship2.png',123,65,{x:860,y:400},2)
-        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:860,y:500},1)
+        xPos=@size.width-140
+        @oneShip('./imgs/ship4.png',240,65,{x:xPos,y:200},4)
+        @oneShip('./imgs/ship3.png',175,65,{x:xPos,y:300},3)
+        @oneShip('./imgs/ship3.png',175,65,{x:xPos,y:300},3)
+        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
 
       oneShip:(src,width,height,position,deckCount)->
         self=@
@@ -174,17 +177,17 @@ define([
         isValid=true
         count=@deckCount
         while(count>0)
-          x10=if classContext.validateCell(cells.cellX-1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX-1] else 0
-          x11=if classContext.validateCell(cells.cellX,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX] else 0
-          x12=if classContext.validateCell(cells.cellX+1,cells.cellY) then classContext.shipMap[cells.cellY][cells.cellX+1] else 0
+          x10=if classContext.validateCell(cells.cellX-1,cells.cellY) then classContext.shipsMap[cells.cellY][cells.cellX-1] else 0
+          x11=if classContext.validateCell(cells.cellX,cells.cellY) then classContext.shipsMap[cells.cellY][cells.cellX] else 0
+          x12=if classContext.validateCell(cells.cellX+1,cells.cellY) then classContext.shipsMap[cells.cellY][cells.cellX+1] else 0
 
-          x00=if classContext.validateCell(cells.cellX-1,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX-1] else 0
-          x01=if classContext.validateCell(cells.cellX,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX] else 0
-          x02=if classContext.validateCell(cells.cellX+1,cells.cellY-1) then classContext.shipMap[cells.cellY-1][cells.cellX+1] else 0
+          x00=if classContext.validateCell(cells.cellX-1,cells.cellY-1) then classContext.shipsMap[cells.cellY-1][cells.cellX-1] else 0
+          x01=if classContext.validateCell(cells.cellX,cells.cellY-1) then classContext.shipsMap[cells.cellY-1][cells.cellX] else 0
+          x02=if classContext.validateCell(cells.cellX+1,cells.cellY-1) then classContext.shipsMap[cells.cellY-1][cells.cellX+1] else 0
 
-          x20=if classContext.validateCell(cells.cellX-1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX-1] else 0
-          x21=if classContext.validateCell(cells.cellX,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX] else 0
-          x22=if classContext.validateCell(cells.cellX+1,cells.cellY+1) then classContext.shipMap[cells.cellY+1][cells.cellX+1] else 0
+          x20=if classContext.validateCell(cells.cellX-1,cells.cellY+1) then classContext.shipsMap[cells.cellY+1][cells.cellX-1] else 0
+          x21=if classContext.validateCell(cells.cellX,cells.cellY+1) then classContext.shipsMap[cells.cellY+1][cells.cellX] else 0
+          x22=if classContext.validateCell(cells.cellX+1,cells.cellY+1) then classContext.shipsMap[cells.cellY+1][cells.cellX+1] else 0
           if x00==1||x01==1||x02==1||
              x10==1||x11==1||x12==1||
              x20==1||x21==1||x22==1
@@ -234,13 +237,13 @@ define([
           btn.buttonMode = true;
           #            // make the button interactive..
           btn.interactive = true;
-          btn.position.x = @size.width-150;
+          btn.position.x = @size.width-140;
           btn.position.y = 90
           btn.anchor.x = 0.5;
           btn.anchor.y = 0.5;
           btn.click = btn.tap =  (data) ->
             if !@disabled
-              self.startGame()
+              self.sendShips(self.shipsMap)
           @startBtn=btn
           @addChild(btn)
 
@@ -315,7 +318,7 @@ define([
           @shipLocation=[]
         classContext.shipSum+=count
         while(count>0)
-          classContext.shipMap[cellY][cellX]=1
+          classContext.shipsMap[cellY][cellX]=1
           @shipLocation.push({x:cellX,y:cellY})
           if @orient
             cellY--
@@ -323,12 +326,12 @@ define([
             cellX--
           count--
         console.log(classContext.shipSum)
-#        console.log(classContext.shipMap)
+#        console.log(classContext.shipsMap)
 
       clearPreviousShipPosition:(classContext)->
         if @shipLocation&&@shipLocation.length
           for pos in  @shipLocation
-           classContext.shipMap[pos.y][pos.x]=0
+           classContext.shipsMap[pos.y][pos.x]=0
           @shipLocation=[]
           console.log @deckCount
           classContext.shipSum-=@deckCount
@@ -343,12 +346,43 @@ define([
           @startBtn.disabled=true
           @startBtn.alpha=0.6
 
+      sendShips:(map)->
+        console.error('Must be implemented in Game.js')
+
+      waitOtherPlayerBeforeStart:()->
+        @addTransparentBg()
+        textMessage='Waiting for the other player...'
+        if(!@text)
+          @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
+        else
+           @text.setText(textMessage)
+        @addPreloader()
+
+      playTheme:()->
+        console.log('play')
+        try
+          audio = new Audio();
+          audio.src='./audio/hespirate.mp3'
+          audio.volume=0.2
+          audio.addEventListener('ended', () ->
+              this.currentTime = 0;
+              this.play();
+          , false);
+          if audio.canPlayType('audio/mp3')
+            audio.play()
+          @audioTheme=audio
+        catch e
+            console.log e
+
+
+      stopTheme:()->
+       @audioTheme.pause()
+       @audioTheme.currentTime=0
+       @audioTheme=null
+
+
       startGame:()->
-        console.log('yeap')
-
-
-
-
+        @stopTheme()
 
 
 

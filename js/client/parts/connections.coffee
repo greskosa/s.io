@@ -2,6 +2,12 @@ define([
     'text!../../config.json','require','game'
 ],  (config,require,game)->
     config=JSON.parse(config)
+    disconnected=(msg)->
+      alert(msg) if msg
+      setTimeout(()->
+        location.reload()
+      ,3000)
+
     require([config.server+":"+config.port+"/socket.io/socket.io.js"],(io)->
         socket = io.connect(config.server+":"+config.port);
         game.socket=socket
@@ -27,12 +33,28 @@ define([
                     game.joinGameScene.clearConnecting() if game.joinGameScene
                     alert(msg.msg)
 
+                  when "disconnected"
+                    disconnected(msg.msg)
            );
-          socket.on('startGame',  (msg)->
-              game.startGame()
+          socket.on('loadRoom',  (roomName)->
+              game.loadRoom(roomName)
           )
           socket.on('updateRoomsList',  (msg)->
+            roomName=if game.gameScene then game.gameScene.roomName else false
+            if(roomName&&msg.rooms&&!msg.rooms[roomName])
+              socket.disconnect();
+              disconnected('Connection with host lost. You win!!!')
             game.joinGameScene.renderAvailableRooms(msg.rooms) if game.joinGameScene
+          )
+          socket.on('connect_error', () ->
+                  disconnected('Sorry server is down. Try again later!')
+                  socket.disconnect();
+          );
+          socket.on('waitOtherPlayerBeforeStart',()->
+            game.gameScene.waitOtherPlayerBeforeStart() if game.gameScene
+          )
+          socket.on('startGame',()->
+            game.gameScene.startGame() if game.gameScene
           )
         )
       ,(err)->

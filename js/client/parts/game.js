@@ -19,9 +19,6 @@ define([
                    //change current scene
                    this.scenesManager.goToScene('StartScene');
                }
-               this.connect2Room=function(room){
-                   this.socket.emit('switchRoom',room.roomName)
-               }.bind(this)
 
                this.goToCreateGameScene=function(){
                    var roomName=prompt('Enter name of room:')
@@ -40,14 +37,21 @@ define([
                    this.joinGameScene = this.scenesManager.createScene('JoinGameScene');
                    this.scenesManager.goToScene('JoinGameScene');
                    this.socket.emit('getAllRooms')
-                   this.joinGameScene.connect2Room=this.connect2Room
+                   this.joinGameScene.connect2Room=function(room){
+                                      this.socket.emit('switchRoom',room.roomName)
+                                  }.bind(this)
                }
 
 
-               this.startGame=function(){
+               this.loadRoom=function(data){
                    console.log('Start game')
                    this.gameScene = this.scenesManager.createScene('GameScene');
+                   this.gameScene.roomName=data.roomName
                    this.scenesManager.goToScene('GameScene');
+                   this.gameScene.sendShips=function(map){
+                       console.log('send ship')
+                       this.socket.emit('sendShipsPosition',{map:map,roomName:data.roomName})
+                   }.bind(this)
                }
 
                this.goToStartScene()

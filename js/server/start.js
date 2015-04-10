@@ -3,6 +3,7 @@ var io = require('socket.io').listen(config.port);
 
 var connections=0
 var rooms={}
+var games={}
 io.sockets.on('connection', function (socket) {
     console.log('connected')
     function getClientName(id){
@@ -14,6 +15,16 @@ io.sockets.on('connection', function (socket) {
     function playerCanConnect(roomName,socket){
         return     rooms[roomName].playersCount<config.maxPlayersLimit&&rooms[roomName].host!=getClientName(socket.id)
 
+    }
+
+    function varifyMap(map){
+        var sum=0
+        for(var i=0;i<10;i++){
+            for(var j=0;j<10;j++){
+                sum+=map[i][j]
+            }
+        }
+        return sum==20
     }
 
     function connectPlayer(roomName,socket){
@@ -31,24 +42,25 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('updateRoomsList',{rooms:rooms});
 
         if (+rooms[roomName].playersCount==+config.maxPlayersLimit){
-            console.log('START GAME')
+            console.log('Load room')
             rooms[roomName].connectedPlayer=getClientName(socket.id)
-            io.sockets["in"](roomName).emit('startGame')
+            io.sockets["in"](roomName).emit('loadRoom',{roomName:roomName})
         }
     }
 
     function clearRooms(socket){
         console.log('CLEAR')
-//        console.log(rooms)
         var newRoomsList={}
         if(!Object.keys(rooms).length)
             return
-//        console.log(rooms)
-//        console.log(io.sockets)
         for(var prop in rooms){
-            currentPlayerName=getClientName(socket.id)
+            var currentPlayerName=getClientName(socket.id)
+            if(games[prop]&&games[prop].maps&&games[prop].maps[currentPlayerName])
+                            delete games[prop].maps[currentPlayerName] //destroy game if host have leaved
             if(rooms[prop].host!=currentPlayerName)
                 newRoomsList[prop]=rooms[prop]
+            else
+                delete games[prop]
 //            else
 //            TODO UNSUBSCRIBE ALL PLAYERS FROM BAD ROOM
 //                io.sockets["in"](rooms[prop].roomName).leave()
@@ -93,10 +105,35 @@ io.sockets.on('connection', function (socket) {
        else
            socket.json.send({'event': 'connectCancel', 'msg': 'Sorry,room is full.'});
     })
+
+    socket.on('sendShipsPosition',function(data){
+        if(!varifyMap(data.map)){
+            socket.json.send({'event': 'disconnected', 'msg': "You are cheating. You was disconnected!"});
+            io.sockets.connected[socket.id].disconnect();
+            return
+        }
+        var currentPlayerName=getClientName(socket.id)
+        var roomName=data.roomName
+        if(!games[roomName]) //if new emty room
+            games[roomName]={maps:{}}
+        games[roomName]['maps'][currentPlayerName]=data.map
+        if(rooms[roomName].host==currentPlayerName)
+            games[roomName].currentPlayer=currentPlayerName
+        if(Object.keys(games[roomName]['maps']).length>1){
+            console.log('start GAME!!!')
+            io.sockets["in"](roomName).emit('startGame',{currentPlayer:games[roomName].currentPlayer})
+        }
+        else{
+            console.log('waitOtherPlayerBeforeStart')
+            socket.emit('waitOtherPlayerBeforeStart')
+        }
+
+    })
     socket.on('disconnect', function () {
         console.log('disconect')
         connections--;
         clearRooms(socket)
+        console.log(games)
     });
     var time = (new Date).toLocaleTimeString();
     socket.json.send({'event': 'connected', 'name': getClientName(), 'time': time});

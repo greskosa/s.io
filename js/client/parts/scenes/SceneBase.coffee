@@ -69,10 +69,13 @@ define([
           bg = PIXI.Sprite.fromImage("imgs/transparent-bg.png");
           bg.position.x = 0;
           bg.position.y = 0;
+          @transparentBackground=bg
           @addChild.call(@,bg);
 
+      removeTransparentBg:()->
+        @removeChild(@transparentBackground) if @transparentBackground
 
-      addPreloader:()->
+      addPreloader:(isAddUpdate)->
           texture = PIXI.Texture.fromImage("imgs/preloader.png");
           console.log(texture)
           @preloader=new PIXI.TilingSprite(texture,128,128)
@@ -83,7 +86,12 @@ define([
           @preloader.position.x = @size.width/2;
           @preloader.position.y = @size.height/2+150;
           @addChild.call(@,@preloader);
-          @addPreloaderUpdate()
+          @addPreloaderUpdate() if isAddUpdate
+
+      updatePreloader:()->
+        if(@preloader)
+           @preloader.tilePosition.x-=128
+           @currentPreloaderFrame++
 
       removeText:()->
         console.log @
@@ -98,9 +106,7 @@ define([
       addPreloaderUpdate:()->
           if !@currentPreloaderFrame||@currentPreloaderFrame>9 then @currentPreloaderFrame=0
           @onUpdate(()=>
-            if(@preloader)
-              @preloader.tilePosition.x-=128
-              @currentPreloaderFrame++
+           @updatePreloader()
           )
 
       addButton:(imgDefault,imgDown,imgOver,position,callback,context)->

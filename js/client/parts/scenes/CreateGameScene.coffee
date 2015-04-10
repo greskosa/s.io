@@ -21,7 +21,7 @@ define([
 
       waitingOtherPlayer:()->
         @changeText('Waiting for the other player...')
-        @addPreloader()
+        @addPreloader(true)
 
       changeText:(text)->
         if(@text) then @text.setText(text)

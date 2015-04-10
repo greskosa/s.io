@@ -55,7 +55,7 @@ define([
           @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
         else
           @text.setText(textMessage)
-        @addPreloader()
+        @addPreloader(true)
         @clicked=true
         setTimeout(()=>
           @connect2Room(room)
