@@ -8,6 +8,7 @@ define([
       fieldPaddingY:40
       shipSum:0
       choosenShip:null
+      allShips:[]
       axisXFieldStartPos:()->
         return @fieldPaddingX+63
 
@@ -107,6 +108,7 @@ define([
           self.shipHandlerClickStart.call(@,self)
         ship.mouseup = ship.mouseupoutside = ship.touchend  = (data)->
           self.shipHandlerClickEnd.call(@,self)
+        @allShips.push(ship)
         @addChild(ship)
 
       shipHandlerMove:(classContext,eventData)->
@@ -243,6 +245,7 @@ define([
           btn.anchor.y = 0.5;
           btn.click = btn.tap =  (data) ->
             if !@disabled
+              self.makeNormalShipCollor()
               self.sendShips(self.shipsMap)
           @startBtn=btn
           @addChild(btn)
@@ -386,6 +389,11 @@ define([
         @removeTransparentBg()
         @removePreloader()
         @removeChild(@waitingText)
+
+      makeNormalShipCollor:()->
+        @allShips.forEach((ship)=>
+          ship.tilePosition.y=0
+        )
 
 
 
