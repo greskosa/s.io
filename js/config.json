@@ -6,5 +6,6 @@
     "originalWidth":1024,
     "originalHeight":768,
     "maxRoomsLimit":10,
-    "maxPlayersLimit":2
+    "maxPlayersLimit":2,
+    "shipsSum":20
 }

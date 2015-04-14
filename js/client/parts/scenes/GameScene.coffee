@@ -55,8 +55,43 @@ define([
           @onUpdate(()=>
               @checkIsAllShipsValid()
               @updatePreloader()
+              @updateCannon()
           )
           @playTheme()
+
+      addXSprite:()->
+        texture= PIXI.Texture.fromImage('./imgs/x.png');
+        x = new PIXI.Sprite(texture);
+        x.zIndex = 0;
+        x.anchor.x = 0.5;
+        x.anchor.y = 0.5;
+        x.visible = false;
+        @xSprite=x
+        @addChild(x)
+
+      addCannon:()->
+        texture= PIXI.Texture.fromImage('./imgs/cannon.png');
+        @cannon = new PIXI.TilingSprite(texture);
+        @cannon.width=110
+        @cannon.scale.set(1.8)
+        @cannon.tilePosition.x=0
+        @cannon.tilePosition.y=0
+        @cannon.zIndex = 0;
+        @cannon.anchor.x = 0.5;
+        @cannon.anchor.y = 0.5;
+        @cannon.fired=false;
+        @cannon.position.x=@size.width/@scaleParams.x-90
+        @cannon.position.y=@size.height/@scaleParams.y-110
+        @addChild(@cannon)
+
+      updateCannon:()=>
+        if !@cannon
+          return
+        if @cannon.fired
+          @cannon.tilePosition.x+=110
+        if @cannon.tilePosition.x>1400
+          @cannon.tilePosition.x=0
+          @cannon.fired=false
 
       addBattleField:(isInterective,x,y)->
         x=x||@getPaddingX()
@@ -67,7 +102,8 @@ define([
         if isInterective
           field.buttonMode = true;
           field.interactive = true;
-          field.mousedown=field.tap= @clickHandler
+          field.mousedown=field.tap= @clickBattleFieldHandler
+          field.mousemove=field.touchmove= @moveBattleFieldHandler
         field.position.x=x
         field.position.y=y
         @bf=field
@@ -87,10 +123,26 @@ define([
         return @gameFieldSize
 
 
-      clickHandler:(data)=>
+      clickBattleFieldHandler:(data)=>
           if (@battleStarted&&@isYourTurn)
             cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
-            @fire({x:cells.cellX,y:cells.cellY})
+            @playFire()
+            @isYourTurn=!@isYourTurn
+            @xSprite.visible=false
+            @cannon.fired=true
+            setTimeout(()=>
+              @fire({x:cells.cellX,y:cells.cellY})
+            ,2700)
+
+
+      moveBattleFieldHandler:(data)=>
+        if (@battleStarted&&@isYourTurn)
+          cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
+          if @validateCell(cells.cellX,cells.cellY)&&@xSprite
+            @xSprite.visible=true
+            @placeShip.call(@xSprite,@,cells.cellY,cells.cellX)
+          else
+            @xSprite.visible=false if @xSprite
 
       addShips:()->
         xPos=@size.width-140
@@ -322,7 +374,7 @@ define([
         xParam=xParam||0
         yParam=yParam||0
         calculateX =(position.x-@axisXFieldStartPos()*@scaleParams.x+xParam*@scaleParams.x)/(@cellSize*@scaleParams.x)
-        calculateY=(position.y-@axisYFieldStartPos()*@scaleParams.y+yParam*@scaleParams.y)/(@cellSize*@scaleParams.y)
+        calculateY=(position.y-@position.y-@axisYFieldStartPos()*@scaleParams.y+yParam*@scaleParams.y)/(@cellSize*@scaleParams.y)
         cellX= Math.round(calculateX)-1
         cellY= Math.round(calculateY)-1
         return {cellX:cellX,cellY:cellY}
@@ -333,6 +385,8 @@ define([
         yParam=if !@orient then @height/2 else @width/2
         diffX=if !@orient then @deckCount-1 else 0
         diffY=if @orient then @deckCount-1 else 0
+        if isNaN(diffX)
+               diffX=0
         clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos()+xParam-2 #2px fix middle
         clearPositionY=classContext.cellSize*(cellY-diffY)+classContext.axisYFieldStartPos()+yParam-2 #2px fix middle
         @position.x=clearPositionX
@@ -369,7 +423,7 @@ define([
       checkIsAllShipsValid:()->
         if !@startBtn
           return
-        if @shipSum==20
+        if @shipSum==config.shipsSum
           @startBtn.disabled=false
           @startBtn.alpha=1
         else
@@ -391,9 +445,20 @@ define([
           @waitingText.setText(textMessage)
         @addPreloader()
 
+      playFire:()->
+        try
+           audio = new Audio();
+           audio.src='./audio/cannon.mp3'
+           audio.volume=0.5
+           if audio.canPlayType('audio/mp3')
+             audio.play()
+           @audioTheme=audio
+        catch e
+           console.log e
+
       playTheme:()->
         console.log('play')
-        return
+#        return
         try
           audio = new Audio();
           audio.src='./audio/hespirate.mp3'
@@ -426,9 +491,15 @@ define([
         @removeChild(@waitingText)
         @removeBtns()
         @scaleParams={x:0.67,y:0.67}
+        @position.y=30
         @battleStarted=true
         @addBattleField(true,@axisXFieldStartPos()-@xPicMargin)
         @scale.set(@scaleParams.x, @scaleParams.y);
+        @changeTurn()
+        @addXSprite()
+        @addCannon()
+
+
 
       makeNormalShipCollor:()->
         @allShips.forEach((ship)=>
@@ -450,6 +521,18 @@ define([
 
       kill:()->
         console.log('KILL')
+
+
+      changeTurn:()->
+        if(@isYourTurn)
+          text="Your turn!"
+          color='lime'
+        else
+          text="Your oponent turn!"
+          color='red'
+        if(@turnText)
+          @removeChild(@turnText)
+        @turnText=@addText(text,{font:"37px Verdana", fill:color,stroke: "#000000", strokeThickness: 3},{x:@size.width/@scaleParams.x/2,y:-10})
 
 
 

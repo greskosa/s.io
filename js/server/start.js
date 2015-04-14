@@ -24,7 +24,7 @@ io.sockets.on('connection', function (socket) {
                 sum+=map[i][j]
             }
         }
-        return sum==20
+        return sum==config.shipsSum
     }
 
     function fire(socket,game, cells){
