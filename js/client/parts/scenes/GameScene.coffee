@@ -598,6 +598,19 @@ define([
             @renderFireResult(2,eachCell)
           )
 
+      showWinner:(data)->
+        console.info('winner')
+        if(window.playerName==data.winner)
+          msg="You win"
+        else
+          msg="You lose"
+        @battleStarted=false
+        setTimeout(()=>
+          alert(msg)
+        ,2000)
+
+
+
 
 
 

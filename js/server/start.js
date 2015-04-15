@@ -112,6 +112,18 @@ io.sockets.on('connection', function (socket) {
         return status
 
     }
+    function checkIsWinner(map){
+        console.log('checkIsWinner')
+        var sum=0
+        for(var i=0;i<10;i++){
+            for(var j=0;j<10;j++){
+                if(map[i][j]==1)
+                sum+=1
+            }
+        }
+        console.log('SUM:'+sum)
+        return sum==0
+    }
     function fire(socket,roomName,game, cell){
 //        Shot map
 //        0 - empty cell
@@ -126,6 +138,7 @@ io.sockets.on('connection', function (socket) {
         var y=cell.y
         var x=cell.x
         var updateCells=[]
+        var isWinner=false
         console.log(cell)
 //        console.log("currentPlayer:"+getClientName(socket.id))
         var roomsClients=io.nsps['/'].adapter.rooms[roomName]
@@ -143,6 +156,8 @@ io.sockets.on('connection', function (socket) {
                   return console.log("you have already fired here!")
                 if(game.maps[playerName][y][x]==1){
                     status=markCells(game.maps[playerName],y,x,updateCells)
+                    isWinner=checkIsWinner(game.maps[playerName])
+
                 }else{
                     game.maps[playerName][y][x]=config.statusMissed
                     console.log('change player to:'+playerName)
@@ -159,7 +174,10 @@ io.sockets.on('connection', function (socket) {
            console.log(id)
            console.log(isYourTurn)
            io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:responseUpdateCells});
-       }
+           if(isWinner)
+            io.to(id).emit('winner', { winner: game.currentPlayer});
+
+        }
 //        console.log(status)
 //        console.log(JSON.stringify(game))
 

@@ -29,6 +29,7 @@ define([
         @addText(msg,{font:"28px Verdana", fill:"#FF0000",stroke: "black", strokeThickness: 4},{x:@size.width/2,y:@size.height*2/3})
 
       addPlayerName:(name)->
+        window.playerName=name
         @addText("Your name: "+name,{font:"23px Verdana", fill:"#FF0000",stroke: "black", strokeThickness: 2},{x:@size.width*0.8,y:20})
 
     return StartScene
