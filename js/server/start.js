@@ -149,12 +149,13 @@ io.sockets.on('connection', function (socket) {
                 break;
             }
         }
+        var responseUpdateCells=status==config.statusKilled?updateCells:[]
         for(var id in roomsClients){
            var plName=getClientName(id)
            var isYourTurn=game.currentPlayer==plName
            console.log(id)
            console.log(isYourTurn)
-           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:updateCells});
+           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:responseUpdateCells});
        }
 //        console.log(status)
 //        console.log(JSON.stringify(game))
