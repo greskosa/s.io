@@ -573,7 +573,6 @@ define([
 
       renderFireResult:(status,cell)->
         console.info 'Status:'+status
-        if @shootMap[cell.y][cell.x] then return
         texture= if status==2 then @missedTexture else @damagedTexture
         x = new PIXI.Sprite(texture);
         x.zIndex = 0;
@@ -598,6 +597,7 @@ define([
             @shootMap[eachCell.y][eachCell.x]=2
             @renderFireResult(2,eachCell)
           )
+
 
 
 
