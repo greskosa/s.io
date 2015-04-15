@@ -137,15 +137,17 @@ io.sockets.on('connection', function (socket) {
         var y=cells.y
         var x=cells.x
         console.log(cells)
-        console.log("currentPlayer:"+getClientName(socket.id))
+//        console.log("currentPlayer:"+getClientName(socket.id))
         var roomsClients=io.nsps['/'].adapter.rooms[roomName]
-        console.log(JSON.stringify(game))
+//        console.log(JSON.stringify(game))
         var response={}
         var status
         for(var id in roomsClients){
             var playerName=getClientName(id)
             response[playerName]={}
+            console.log('current player:'+game.currentPlayer)
             var isYourTurn=game.currentPlayer==playerName
+            console.log(isYourTurn)
             if(!isYourTurn){
                 if (game.maps[playerName][y][x]==config.statusMissed||game.maps[playerName][y][x]==config.statusInjured)
                   return console.log("you have already fired here!")
@@ -153,9 +155,11 @@ io.sockets.on('connection', function (socket) {
                     status=markCells(game.maps[playerName],y,x)
                 }else{
                     game.maps[playerName][y][x]=config.statusMissed
+                    console.log('change player to:'+playerName)
                     game.currentPlayer=playerName
                     status=config.statusMissed
                 }
+                break;
             }
         }
         for(var id in roomsClients){
@@ -165,8 +169,8 @@ io.sockets.on('connection', function (socket) {
            console.log(isYourTurn)
            io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName]});
        }
-        console.log(status)
-        console.log(JSON.stringify(game))
+//        console.log(status)
+//        console.log(JSON.stringify(game))
 
     }
     function connectPlayer(roomName,socket){
