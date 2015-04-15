@@ -56,6 +56,9 @@ define([
           socket.on('startGame',(data)->
             game.gameScene.startGame(data) if game.gameScene
           )
+          socket.on('fireResponse',(data)->
+            game.gameScene.rerenderBattleField(data) if game.gameScene
+          )
         )
       ,(err)->
         game.startScene.addFailedStageUi('Connection problem, try later.')

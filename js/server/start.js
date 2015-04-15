@@ -13,8 +13,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     function playerCanConnect(roomName,socket){
-        return     rooms[roomName].playersCount<config.maxPlayersLimit&&rooms[roomName].host!=getClientName(socket.id)
-
+        return  rooms[roomName].playersCount<config.maxPlayersLimit&&rooms[roomName].host!=getClientName(socket.id)
     }
 
     function varifyMap(map){
@@ -26,10 +25,149 @@ io.sockets.on('connection', function (socket) {
         }
         return sum==config.shipsSum
     }
+    function validateCell(x,y){
+        if (x>9 || x<0 || y<0 || y>9)
+           return false
+        return true
+    }
+    function addCellIfNeed(map,cells,obj){
+        console.log(obj.y)
+        console.log(obj.x)
+        console.log(map[obj.y][obj.x])
+        console.log('-----------------')
+        if(map[obj.y][obj.x]==0){
+            cells.push(obj)
+            return 0
+        }
 
-    function fire(socket,game, cells){
-        console.log('FIRE!')
+        if(map[obj.y][obj.x]==1)
+            return cells.push(obj)
+
+    }
+    function isKilled(map,cells,x,y,direction){
+//        debugger
+        var left=false,right=false,up=false,down=false,cell;
+        if((!direction&&validateCell(x,y-1))||(direction&&direction!='down'&&validateCell(x,y-1))){
+            cell=map[y-1][x]
+            if(cell==0||cell==config.statusMissed){
+                up=true
+                cells.push({x:x,y:y-1})
+            }else if(cell==config.statusInjured){
+                up=isKilled(map,cells,x,y-1,'up')
+            }
+        }else{
+            up=true
+        }
+        if((!direction&&validateCell(x,y+1))||(direction&&direction!='up'&&validateCell(x,y+1))){
+            cell=map[y+1][x]
+            if(cell==0||cell==config.statusMissed){
+                down=true
+                cells.push({x:x,y:y+1})
+            }else if(cell==config.statusInjured){
+                down=isKilled(map,cells,x,y+1,'down')
+            }
+        }else{
+            down=true
+        }
+        if((!direction&&validateCell(x-1,y))||(direction&&direction!='right'&&validateCell(x-1,y))){
+            cell=map[y][x-1]
+            if(cell==0||cell==config.statusMissed){
+                left=true
+                cells.push({x:x-1,y:y})
+            }else if(cell==config.statusInjured){
+                left=isKilled(map,cells,x-1,y,'left')
+            }
+        }else{
+            left=true
+        }
+        if((!direction&&validateCell(x+1,y))||(direction&&direction!='left'&&validateCell(x+1,y))){
+            cell=map[y][x+1]
+            if(cell==0||cell==config.statusMissed){
+                right=true
+                cells.push({x:x+1,y:y})
+            }else if(cell==config.statusInjured){
+                right=isKilled(map,cells,x+1,y,'right')
+            }
+        }else{
+            right=true
+        }
+        return left&&right&&up&&down
+    }
+    function markCells(map,y,x){
+        map[y][x]=config.statusInjured
+        var status
+        var cells=[]
+
+        if(!isKilled(map,cells,x,y)){
+//        injured!
+            console.log('injured')
+            status=config.statusInjured
+        }else{
+//            killed!
+            console.log('killed')
+            if(validateCell(x-1,y-1))
+                cells.push({x:x-1,y:y-1})
+            if(validateCell(x+1,y-1))
+                cells.push({x:x+1,y:y-1})
+            if(validateCell(x-1,y+1))
+                cells.push({x:x-1,y:y+1})
+            if(validateCell(x+1,y+1))
+                cells.push({x:x+1,y:y+1})
+            var arrLength=cells.length
+            for(var i=0;i<arrLength;i++){
+                var obj=cells[i]
+                map[obj.y][obj.x]=config.statusMissed
+            }
+            status=config.statusKilled
+        }
+        return status
+
+    }
+    function fire(socket,roomName,game, cells){
+//        Shot map
+//        0 - empty cell
+//        1 - cell with ship or part of ship
+//        2 - missed
+//        3 - injured or killed
+//
+//        Status
+//        2 - missed
+//        3 - injured
+//        4 - killed
+        var y=cells.y
+        var x=cells.x
         console.log(cells)
+        console.log("currentPlayer:"+getClientName(socket.id))
+        var roomsClients=io.nsps['/'].adapter.rooms[roomName]
+        console.log(JSON.stringify(game))
+        var response={}
+        var status
+        for(var id in roomsClients){
+            var playerName=getClientName(id)
+            response[playerName]={}
+            var isYourTurn=game.currentPlayer==playerName
+            if(!isYourTurn){
+                if (game.maps[playerName][y][x]==config.statusMissed||game.maps[playerName][y][x]==config.statusInjured)
+                  return console.log("you have already fired here!")
+                if(game.maps[playerName][y][x]==1){
+                    status=markCells(game.maps[playerName],y,x)
+                }else{
+                    game.maps[playerName][y][x]=config.statusMissed
+                    game.currentPlayer=playerName
+                    status=config.statusMissed
+                }
+            }
+        }
+        for(var id in roomsClients){
+           var plName=getClientName(id)
+           var isYourTurn=game.currentPlayer==plName
+           console.log(id)
+           console.log(isYourTurn)
+           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName]});
+       }
+        console.log(status)
+        console.log(JSON.stringify(game))
+
     }
     function connectPlayer(roomName,socket){
         console.log('CONNECT')
@@ -164,7 +302,7 @@ io.sockets.on('connection', function (socket) {
             return 'not your turn'
         if(!game.maps.hasOwnProperty(playerName))
             return 'you not in this game'
-        fire(socket,game,cells)
+        fire(socket,roomName,game,cells)
 
     })
     var time = (new Date).toLocaleTimeString();

@@ -16,12 +16,15 @@ define([
       battleStarted:false
       scaleParams:{x:1,y:1}
       isYourTurn:false
-      gameXPadding:()->
-        if !@battleStarted then return 0
-        return @cellSize*10+90+@xPicMargin
+      isEnableFire:false
+      dirtySpaceBtwnFlds:90
 
-      axisXFieldStartPos:()->
-        return @fieldPaddingX+@xPicMargin+@gameXPadding()
+      gameXPadding:(isZero)->
+        if !@battleStarted||isZero then return 0
+        return @cellSize*10+@dirtySpaceBtwnFlds+@xPicMargin
+
+      axisXFieldStartPos:(isZero)->
+        return @fieldPaddingX+@xPicMargin+@gameXPadding(isZero)
 
       axisYFieldStartPos:()->
         return @fieldPaddingY+@yPicMargin
@@ -124,10 +127,10 @@ define([
 
 
       clickBattleFieldHandler:(data)=>
-          if (@battleStarted&&@isYourTurn)
+          if (@battleStarted&&@isYourTurn&&@isEnableFire)
             cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
-            @playFire()
-            @isYourTurn=!@isYourTurn
+            @playSound('./audio/cannon.mp3')
+            @isEnableFire=false
             @xSprite.visible=false
             @cannon.fired=true
             setTimeout(()=>
@@ -136,11 +139,11 @@ define([
 
 
       moveBattleFieldHandler:(data)=>
-        if (@battleStarted&&@isYourTurn)
+        if (@battleStarted&&@isYourTurn&&@isEnableFire)
           cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
           if @validateCell(cells.cellX,cells.cellY)&&@xSprite
             @xSprite.visible=true
-            @placeShip.call(@xSprite,@,cells.cellY,cells.cellX)
+            @placeSpriteObject.call(@xSprite,@,cells.cellY,cells.cellX)
           else
             @xSprite.visible=false if @xSprite
 
@@ -360,7 +363,7 @@ define([
       setShipCell:(classContext)->
 #        ship context
         cells=classContext.getShipCells.call(@,classContext)
-        classContext.placeShip.call(@,classContext,cells.cellY,cells.cellX)
+        classContext.placeSpriteObject.call(@,classContext,cells.cellY,cells.cellX)
         if !@valid
             return
         classContext.setShipInMap.call(@,classContext,cells.cellY,cells.cellX,@deckCount)
@@ -379,7 +382,7 @@ define([
         cellY= Math.round(calculateY)-1
         return {cellX:cellX,cellY:cellY}
 
-      placeShip:(classContext,cellY,cellX)->
+      placeSpriteObject:(classContext,cellY,cellX,isZero)->
 #        ship context
         xParam=if !@orient then @width/2 else @height/2
         yParam=if !@orient then @height/2 else @width/2
@@ -387,7 +390,7 @@ define([
         diffY=if @orient then @deckCount-1 else 0
         if isNaN(diffX)
                diffX=0
-        clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos()+xParam-2 #2px fix middle
+        clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos(isZero)+xParam-2 #2px fix middle
         clearPositionY=classContext.cellSize*(cellY-diffY)+classContext.axisYFieldStartPos()+yParam-2 #2px fix middle
         @position.x=clearPositionX
         @position.y=clearPositionY
@@ -445,11 +448,14 @@ define([
           @waitingText.setText(textMessage)
         @addPreloader()
 
-      playFire:()->
+      playSound:(src)->
         try
            audio = new Audio();
-           audio.src='./audio/cannon.mp3'
+           audio.src=src
            audio.volume=0.5
+           audio.addEventListener('ended', () ->
+              audio=null
+           , false);
            if audio.canPlayType('audio/mp3')
              audio.play()
            @audioTheme=audio
@@ -458,7 +464,7 @@ define([
 
       playTheme:()->
         console.log('play')
-#        return
+        return
         try
           audio = new Audio();
           audio.src='./audio/hespirate.mp3'
@@ -481,10 +487,15 @@ define([
            @audioTheme=null
 
 
+      setTurn:(isYourTurn)->
+        @isYourTurn=isYourTurn
+        console.info('IS YOUR TURN '+@isYourTurn)
+        if(@isYourTurn)
+          @isEnableFire=true
+
       startGame:(data)->
         console.log(data)
-        @isYourTurn=data.isYourTurn
-        console.info('IS YOUR TURN '+@isYourTurn)
+        @setTurn(data.isYourTurn)
         @stopTheme()
         @removeTransparentBg()
         @removePreloader()
@@ -498,6 +509,7 @@ define([
         @changeTurn()
         @addXSprite()
         @addCannon()
+        @initTextureFireResult()
 
 
 
@@ -533,6 +545,33 @@ define([
         if(@turnText)
           @removeChild(@turnText)
         @turnText=@addText(text,{font:"37px Verdana", fill:color,stroke: "#000000", strokeThickness: 3},{x:@size.width/@scaleParams.x/2,y:-10})
+
+
+      rerenderBattleField:(data)->
+        if(@isYourTurn)
+         @renderFireResult(data.status,data.cell)
+        else
+         @updateYourShipsMap(data.map)
+        @setTurn(data.isYourTurn)
+        @changeTurn()
+
+
+      renderFireResult:(status,cell)->
+        console.info 'Status:'+status
+        texture= if status==2 then @missedTexture else @damagedTexture
+        x = new PIXI.Sprite(texture);
+        x.zIndex = 0;
+        x.anchor.x = 0.5;
+        x.anchor.y = 0.5;
+        @addChild(x)
+        @placeSpriteObject.call(x,@,cell.y,cell.x)
+
+      updateYourShipsMap:(map)->
+        console.info('@TODO:need to rerender your map')
+
+      initTextureFireResult:()->
+        @missedTexture= PIXI.Texture.fromImage('./imgs/missedFireResult.png');
+        @damagedTexture= PIXI.Texture.fromImage('./imgs/damagedFireResult.png');
 
 
 

@@ -7,5 +7,8 @@
     "originalHeight":768,
     "maxRoomsLimit":10,
     "maxPlayersLimit":2,
-    "shipsSum":20
+    "shipsSum":20,
+    "statusMissed":2,
+    "statusInjured":3,
+    "statusKilled":4
 }
