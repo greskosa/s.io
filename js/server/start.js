@@ -78,6 +78,17 @@ io.sockets.on('connection', function (socket) {
         }else{
             right=true
         }
+        if(left&&right&&up&&down) //then add diagonals cells
+        {
+            if(validateCell(x-1,y-1))
+                cells.push({x:x-1,y:y-1})
+            if(validateCell(x+1,y-1))
+                cells.push({x:x+1,y:y-1})
+            if(validateCell(x-1,y+1))
+                cells.push({x:x-1,y:y+1})
+            if(validateCell(x+1,y+1))
+                cells.push({x:x+1,y:y+1})
+        }
         return left&&right&&up&&down
     }
     function markCells(map,y,x,cells){
@@ -91,14 +102,6 @@ io.sockets.on('connection', function (socket) {
         }else{
 //            killed!
             console.log('killed')
-            if(validateCell(x-1,y-1))
-                cells.push({x:x-1,y:y-1})
-            if(validateCell(x+1,y-1))
-                cells.push({x:x+1,y:y-1})
-            if(validateCell(x-1,y+1))
-                cells.push({x:x-1,y:y+1})
-            if(validateCell(x+1,y+1))
-                cells.push({x:x+1,y:y+1})
             var arrLength=cells.length
             for(var i=0;i<arrLength;i++){
                 var obj=cells[i]
