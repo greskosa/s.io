@@ -30,20 +30,7 @@ io.sockets.on('connection', function (socket) {
            return false
         return true
     }
-    function addCellIfNeed(map,cells,obj){
-        console.log(obj.y)
-        console.log(obj.x)
-        console.log(map[obj.y][obj.x])
-        console.log('-----------------')
-        if(map[obj.y][obj.x]==0){
-            cells.push(obj)
-            return 0
-        }
 
-        if(map[obj.y][obj.x]==1)
-            return cells.push(obj)
-
-    }
     function isKilled(map,cells,x,y,direction){
 //        debugger
         var left=false,right=false,up=false,down=false,cell;
@@ -93,10 +80,9 @@ io.sockets.on('connection', function (socket) {
         }
         return left&&right&&up&&down
     }
-    function markCells(map,y,x){
+    function markCells(map,y,x,cells){
         map[y][x]=config.statusInjured
         var status
-        var cells=[]
 
         if(!isKilled(map,cells,x,y)){
 //        injured!
@@ -123,7 +109,7 @@ io.sockets.on('connection', function (socket) {
         return status
 
     }
-    function fire(socket,roomName,game, cells){
+    function fire(socket,roomName,game, cell){
 //        Shot map
 //        0 - empty cell
 //        1 - cell with ship or part of ship
@@ -134,9 +120,10 @@ io.sockets.on('connection', function (socket) {
 //        2 - missed
 //        3 - injured
 //        4 - killed
-        var y=cells.y
-        var x=cells.x
-        console.log(cells)
+        var y=cell.y
+        var x=cell.x
+        var updateCells=[]
+        console.log(cell)
 //        console.log("currentPlayer:"+getClientName(socket.id))
         var roomsClients=io.nsps['/'].adapter.rooms[roomName]
 //        console.log(JSON.stringify(game))
@@ -152,7 +139,7 @@ io.sockets.on('connection', function (socket) {
                 if (game.maps[playerName][y][x]==config.statusMissed||game.maps[playerName][y][x]==config.statusInjured)
                   return console.log("you have already fired here!")
                 if(game.maps[playerName][y][x]==1){
-                    status=markCells(game.maps[playerName],y,x)
+                    status=markCells(game.maps[playerName],y,x,updateCells)
                 }else{
                     game.maps[playerName][y][x]=config.statusMissed
                     console.log('change player to:'+playerName)
@@ -167,7 +154,7 @@ io.sockets.on('connection', function (socket) {
            var isYourTurn=game.currentPlayer==plName
            console.log(id)
            console.log(isYourTurn)
-           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName]});
+           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:updateCells});
        }
 //        console.log(status)
 //        console.log(JSON.stringify(game))
@@ -295,7 +282,7 @@ io.sockets.on('connection', function (socket) {
     });
     socket.on('fire',function(data){
         var roomName=data.roomName
-        var cells=data.cells
+        var cell=data.cell
         if(!roomName)
             return console.log('roomname missed')
         var game=games[roomName]
@@ -303,10 +290,10 @@ io.sockets.on('connection', function (socket) {
             return console.log('error')
         var playerName=getClientName(socket.id)
         if(playerName!=game.currentPlayer)
-            return 'not your turn'
+            return console.log('not your turn')
         if(!game.maps.hasOwnProperty(playerName))
-            return 'you not in this game'
-        fire(socket,roomName,game,cells)
+            return console.log('you not in this game')
+        fire(socket,roomName,game,cell)
 
     })
     var time = (new Date).toLocaleTimeString();

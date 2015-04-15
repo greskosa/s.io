@@ -48,6 +48,18 @@ define([
                [0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0]
       ]
+      shootMap:[
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0]
+      ]
 
       constructor:(screen)->
           super(screen)
@@ -129,6 +141,8 @@ define([
       clickBattleFieldHandler:(data)=>
           if (@battleStarted&&@isYourTurn&&@isEnableFire)
             cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
+            if(@shootMap[cells.cellY][cells.cellX]!=0)
+              return alert 'You cannot shoot here again!'
             @playSound('./audio/cannon.mp3')
             @isEnableFire=false
             @xSprite.visible=false
@@ -550,6 +564,7 @@ define([
       rerenderBattleField:(data)->
         if(@isYourTurn)
          @renderFireResult(data.status,data.cell)
+         @updateShootMap(data.status,data.cell,data.updateCells)
         else
          @updateYourShipsMap(data.map)
         @setTurn(data.isYourTurn)
@@ -572,6 +587,15 @@ define([
       initTextureFireResult:()->
         @missedTexture= PIXI.Texture.fromImage('./imgs/missedFireResult.png');
         @damagedTexture= PIXI.Texture.fromImage('./imgs/damagedFireResult.png');
+
+      updateShootMap:(status,cell,updateCells)->
+        console.log(updateCells)
+        @shootMap[cell.y][cell.x]=if status==2 then 2 else 3
+        updateCells.forEach((eachCell)=>
+          console.log eachCell
+          @shootMap[eachCell.y][eachCell.x]=2
+        )
+        console.log(@shootMap)
 
 
 

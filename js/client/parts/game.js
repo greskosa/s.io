@@ -52,9 +52,9 @@ define([
                        console.log('send ship')
                        this.socket.emit('sendShipsPosition',{map:map,roomName:data.roomName})
                    }.bind(this)
-                   this.gameScene.fire=function(cells){
+                   this.gameScene.fire=function(cell){
                        console.log('fire!')
-                       this.socket.emit('fire',{roomName:this.gameScene.roomName,cells:cells})
+                       this.socket.emit('fire',{roomName:this.gameScene.roomName,cell:cell})
                    }.bind(this)
                }
 
