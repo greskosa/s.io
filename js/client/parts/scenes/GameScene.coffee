@@ -149,7 +149,7 @@ define([
             @cannon.fired=true
             setTimeout(()=>
               @fire({x:cells.cellX,y:cells.cellY})
-            ,2700)
+            ,1000)
 
 
       moveBattleFieldHandler:(data)=>
@@ -163,16 +163,18 @@ define([
 
       addShips:()->
         xPos=@size.width-140
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
+        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
+        @oneShip('./imgs/ship3.png',175,65,{x:xPos,y:300},3)
+        @oneShip('./imgs/ship3.png',175,65,{x:xPos,y:300},3)
         @oneShip('./imgs/ship4.png',240,65,{x:xPos,y:200},4)
-        @oneShip('./imgs/ship3.png',175,65,{x:xPos,y:300},3)
-        @oneShip('./imgs/ship3.png',175,65,{x:xPos,y:300},3)
-        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
-        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
-        @oneShip('./imgs/ship2.png',123,65,{x:xPos,y:400},2)
-        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
-        @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
+
+
 
       oneShip:(src,width,height,position,deckCount)->
         self=@
@@ -571,7 +573,7 @@ define([
         @changeTurn()
 
 
-      renderFireResult:(status,cell)->
+      renderFireResult:(status,cell,isZero)->
         console.info 'Status:'+status
         texture= if status==2 then @missedTexture else @damagedTexture
         x = new PIXI.Sprite(texture);
@@ -579,10 +581,20 @@ define([
         x.anchor.x = 0.5;
         x.anchor.y = 0.5;
         @addChild(x)
-        @placeSpriteObject.call(x,@,cell.y,cell.x)
+        @placeSpriteObject.call(x,@,cell.y,cell.x,isZero)
 
       updateYourShipsMap:(map)->
-        console.info('@TODO:need to rerender your map')
+        console.log(map)
+        for cells, j in @shootMap
+          for value2, i in cells
+            if(map[j][i]!=@shipsMap[j][i])
+              console.log(j)
+              console.log(i)
+              console.log(map[j][i])
+              console.log(@shipsMap[j][i])
+              @renderFireResult(map[j][i],{x:i,y:j},true)
+              @shipsMap[j][i]=map[j][i]
+              console.log('----------------------')
 
       initTextureFireResult:()->
         @missedTexture= PIXI.Texture.fromImage('./imgs/missedFireResult.png');
