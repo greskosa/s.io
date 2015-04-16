@@ -589,13 +589,8 @@ define([
         for cells, j in @shootMap
           for value2, i in cells
             if(map[j][i]!=@shipsMap[j][i])
-              console.log(j)
-              console.log(i)
-              console.log(map[j][i])
-              console.log(@shipsMap[j][i])
               @renderFireResult(map[j][i],{x:i,y:j},true)
               @shipsMap[j][i]=map[j][i]
-              console.log('----------------------')
 
       initTextureFireResult:()->
         @missedTexture= PIXI.Texture.fromImage('./imgs/missedFireResult.png');
@@ -603,11 +598,9 @@ define([
         @xTexture= PIXI.Texture.fromImage('./imgs/x.png');
 
       updateShootMap:(status,cell,updateCells)->
-        console.log(updateCells)
         @shootMap[cell.y][cell.x]=if status==2 then 2 else 3
         if(updateCells.length)
           updateCells.forEach((eachCell)=>
-            console.log eachCell
             @shootMap[eachCell.y][eachCell.x]=2
             @renderFireResult(2,eachCell)
           )
