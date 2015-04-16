@@ -75,7 +75,7 @@ define([
           @playTheme()
 
       addXSprite:()->
-        texture= PIXI.Texture.fromImage('./imgs/x.png');
+        texture= PIXI.Texture.fromImage('./imgs/crosshair.png');
         x = new PIXI.Sprite(texture);
         x.zIndex = 0;
         x.anchor.x = 0.5;
@@ -398,7 +398,7 @@ define([
         cellY= Math.round(calculateY)-1
         return {cellX:cellX,cellY:cellY}
 
-      placeSpriteObject:(classContext,cellY,cellX,isZero)->
+      placeSpriteObject:(classContext,cellY,cellX,isYourZone)->
 #        ship context
         xParam=if !@orient then @width/2 else @height/2
         yParam=if !@orient then @height/2 else @width/2
@@ -406,7 +406,7 @@ define([
         diffY=if @orient then @deckCount-1 else 0
         if isNaN(diffX)
                diffX=0
-        clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos(isZero)+xParam-2 #2px fix middle
+        clearPositionX=classContext.cellSize*(cellX-diffX)+classContext.axisXFieldStartPos(isYourZone)+xParam-2 #2px fix middle
         clearPositionY=classContext.cellSize*(cellY-diffY)+classContext.axisYFieldStartPos()+yParam-2 #2px fix middle
         @position.x=clearPositionX
         @position.y=clearPositionY
@@ -573,15 +573,16 @@ define([
         @changeTurn()
 
 
-      renderFireResult:(status,cell,isZero)->
+      renderFireResult:(status,cell,isYourZone)->
         console.info 'Status:'+status
-        texture= if status==2 then @missedTexture else @damagedTexture
+        damageTexture=if isYourZone then  @damagedTexture  else @xTexture
+        texture= if status==2 then @missedTexture else damageTexture
         x = new PIXI.Sprite(texture);
         x.zIndex = 0;
         x.anchor.x = 0.5;
         x.anchor.y = 0.5;
         @addChild(x)
-        @placeSpriteObject.call(x,@,cell.y,cell.x,isZero)
+        @placeSpriteObject.call(x,@,cell.y,cell.x,isYourZone)
 
       updateYourShipsMap:(map)->
         console.log(map)
@@ -599,6 +600,7 @@ define([
       initTextureFireResult:()->
         @missedTexture= PIXI.Texture.fromImage('./imgs/missedFireResult.png');
         @damagedTexture= PIXI.Texture.fromImage('./imgs/damagedFireResult.png');
+        @xTexture= PIXI.Texture.fromImage('./imgs/x.png');
 
       updateShootMap:(status,cell,updateCells)->
         console.log(updateCells)
