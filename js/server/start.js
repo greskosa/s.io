@@ -5,7 +5,6 @@ var connections=0
 var rooms={}
 var games={}
 io.sockets.on('connection', function (socket) {
-    console.log('connected')
     function getClientName(id){
         id=id||socket.id
         var ID = (id).toString().substr(0, 8);
@@ -210,8 +209,6 @@ io.sockets.on('connection', function (socket) {
             return
         for(var prop in rooms){
             var currentPlayerName=getClientName(socket.id)
-            if(games[prop]&&games[prop].maps&&games[prop].maps[currentPlayerName])
-                            delete games[prop].maps[currentPlayerName] //destroy game if host have leaved
             if(rooms[prop].host!=currentPlayerName)
                 newRoomsList[prop]=rooms[prop]
             else
@@ -220,12 +217,27 @@ io.sockets.on('connection', function (socket) {
 //            TODO UNSUBSCRIBE ALL PLAYERS FROM BAD ROOM
 //                io.sockets["in"](rooms[prop].roomName).leave()
 
-            if(rooms[prop].connectedPlayer&&currentPlayerName==rooms[prop].connectedPlayer)
+            if(rooms[prop].connectedPlayer&&currentPlayerName==rooms[prop].connectedPlayer){
+                console.log('disconent non-host!')
+                if(games[prop]&&games[prop].maps&&games[prop].maps[currentPlayerName]){
+                    var roomsClients=io.nsps['/'].adapter.rooms[prop]
+                    for(var id in roomsClients){
+                       if (currentPlayerName!=getClientName(id)){
+                           io.to(id).emit('connectedPlayerExit');
+                       }
+                    }
+                    delete games[prop].maps[currentPlayerName]
+                }
                 rooms[prop].playersCount--
+                delete rooms[prop].connectedPlayer
+            }
 
         }
         rooms=newRoomsList
         socket.broadcast.emit('updateRoomsList',{rooms:rooms});
+        console.log(JSON.stringify(games))
+        console.log(JSON.stringify(rooms))
+
     }
 
     connections++;
@@ -300,7 +312,7 @@ io.sockets.on('connection', function (socket) {
         console.log('disconect')
         connections--;
         clearRooms(socket)
-        console.log(games)
+//        console.log(games)
     });
     socket.on('fire',function(data){
         var roomName=data.roomName

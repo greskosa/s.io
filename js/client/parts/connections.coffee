@@ -46,6 +46,9 @@ define([
               disconnected('Connection with host lost. You win!!!')
             game.joinGameScene.renderAvailableRooms(msg.rooms) if game.joinGameScene
           )
+          socket.on('connectedPlayerExit',()->
+            disconnected('Connection with other player lost. You win!!!')
+          )
           socket.on('connect_error', () ->
                   disconnected('Sorry server is down. Try again later!')
                   socket.disconnect();
