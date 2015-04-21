@@ -18,6 +18,7 @@ define([
       isYourTurn:false
       isEnableFire:false
       dirtySpaceBtwnFlds:90
+      fireSpritesArr:[]
 
       gameXPadding:(isZero)->
         if !@battleStarted||isZero then return 0
@@ -615,6 +616,18 @@ define([
         setTimeout(()=>
           alert(msg)
         ,2000)
+
+
+      renderFireAnimations:()->
+        if(!@fireSpritesArr.length) then return
+        for fireSprite in @fireSpritesArr
+            xPos=fireSprite.tilePosition.x
+            yPos=fireSprite.tilePosition.y
+            if xPos+128==512
+              fireSprite.tilePosition.x=0
+              fireSprite.tilePosition.y=if yPos+128==512 then 0 else yPos+128
+            else
+              fireSprite.tilePosition.x=xPos+128
 
 
 
