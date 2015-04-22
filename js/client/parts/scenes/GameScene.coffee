@@ -481,7 +481,7 @@ define([
 
       playTheme:()->
         console.log('play')
-        return
+#        return
         try
           audio = new Audio();
           audio.src='./audio/hespirate.mp3'
@@ -561,7 +561,7 @@ define([
           color='red'
         if(@turnText)
           @removeChild(@turnText)
-        @turnText=@addText(text,{font:"37px Verdana", fill:color,stroke: "#000000", strokeThickness: 3},{x:@size.width/@scaleParams.x/2,y:-10})
+        @turnText=@addText(text,{font:"40px Fjalla One", fill:color,stroke: "#000000", strokeThickness: 3},{x:@size.width/@scaleParams.x/2,y:-10})
 
 
       rerenderBattleField:(data)->
