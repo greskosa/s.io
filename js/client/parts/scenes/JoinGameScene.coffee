@@ -14,7 +14,7 @@ define([
        console.log Object.keys(rooms)
        @clearInfo()
        if(!rooms||(rooms&&!Object.keys(rooms).length))
-         @msg=@addText('No rooms are available',{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:@size.width/2,y:100})
+         @msg=@addText('No rooms are available',{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:@size.width/2,y:100})
          return
        @rooms=rooms
        count=0
