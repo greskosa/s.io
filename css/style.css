@@ -7,7 +7,7 @@ html,body{
 }
 canvas{
     display: block;
-    background: url("../imgs/bg.jpg") scroll 0 0;
+    background: url("../imgs/bg2.jpg") scroll 0 0;
     background-size: 100% 100%;
     margin:0 auto;
 }

@@ -18,6 +18,7 @@ define([
          return
        @rooms=rooms
        count=0
+       @renderRoom({roomName:"Game Name:", host:"HostName:",created:"Time created:",playersCount:"Players count:",isLabel:true},-1)
        for index of  @rooms
          @renderRoom(@rooms[index],count)
          count++
@@ -31,12 +32,15 @@ define([
         @roomsInfo=[]
 
       renderRoom:(room,count)->
-        @roomsInfo.push(@addText(room.roomName,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:200,y:100+count*50},()=>@connecting(room)))
-        @roomsInfo.push(@addText(room.host,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:400,y:100+count*50},()=>@connecting(room)))
-        @roomsInfo.push(@addText(@getTime(room.created),{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:600,y:100+count*50},()=>@connecting(room)))
-        @roomsInfo.push(@addText(room.playersCount+"/"+config.maxPlayersLimit,{font:"15px Verdana", fill:"white",stroke: "#FFFFFF", strokeThickness: 1},{x:800,y:100+count*50},()=>@connecting(room)))
+        interactiveFunc=if room.isLabel then false else ()=>@connecting(room)
+        @roomsInfo.push(@addText(room.roomName,{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:200,y:130+count*50},interactiveFunc))
+        @roomsInfo.push(@addText(room.host,{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:400,y:130+count*50},interactiveFunc))
+        @roomsInfo.push(@addText(@getTime(room.created),{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:600,y:130+count*50},interactiveFunc))
+        playerText =if !isNaN(parseInt(room.playersCount)) then room.playersCount+"/"+config.maxPlayersLimit else room.playersCount
+        @roomsInfo.push(@addText(playerText,{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:800,y:130+count*50},interactiveFunc))
 
       getTime:(created)->
+        if typeof created == 'string' then return created
         date=new Date(created)
         console.log(date.getHours().toString().length)
         h= if date.getHours().toString().length>1 then date.getHours() else "0#{date.getHours()}"

@@ -14,7 +14,7 @@ define([
 
       addGameTitle:()->
          console.log(@size)
-         @addText(config.appName,{font:"56px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2,y:@size.height/3})
+         @addText(config.appName,{font:"66px Fjalla One", fill:"#ecf1f1",stroke: "#434945", strokeThickness: 8, dropShadow:true, dropShadowDistance:4,dropShadowColor:'#000000'},{x:@size.width/2,y:@size.height/3})
 
       addSuccesStageUi:(name,createGameCallback,joinGameCallback,context)->
         @addPlayerName(name)

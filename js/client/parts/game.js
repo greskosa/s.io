@@ -44,18 +44,23 @@ define([
 
 
                this.loadRoom=function(data){
-                   console.log('Start game')
-                   this.gameScene = this.scenesManager.createScene('GameScene');
-                   this.gameScene.roomName=data.roomName
-                   this.scenesManager.goToScene('GameScene');
-                   this.gameScene.sendShips=function(map){
-                       console.log('send ship')
-                       this.socket.emit('sendShipsPosition',{map:map,roomName:data.roomName})
+                   var loader = new PIXI.AssetLoader(config.assetsToLoad);
+                   loader.onComplete = function(all){
+                        document.getElementsByTagName('canvas')[0].style.background="url('./imgs/bginroom.jpg')"
+                        this.gameScene = this.scenesManager.createScene('GameScene');
+                        this.gameScene.roomName=data.roomName
+                        this.scenesManager.goToScene('GameScene');
+                        this.gameScene.sendShips=function(map){
+                            console.log('send ship')
+                            this.socket.emit('sendShipsPosition',{map:map,roomName:data.roomName})
+                        }.bind(this)
+                        this.gameScene.fire=function(cell){
+                            console.log('fire!')
+                            this.socket.emit('fire',{roomName:this.gameScene.roomName,cell:cell})
+                        }.bind(this)
                    }.bind(this)
-                   this.gameScene.fire=function(cell){
-                       console.log('fire!')
-                       this.socket.emit('fire',{roomName:this.gameScene.roomName,cell:cell})
-                   }.bind(this)
+                   loader.load();
+
                }
 
                this.goToStartScene()
