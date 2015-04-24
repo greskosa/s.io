@@ -162,7 +162,7 @@ io.sockets.on('connection', function (socket) {
                     isWinner=sum==0
 
                 }else{
-                    if(game.maps[playerName][y]&&game.maps[playerName][y][x])
+                    if(game.maps[playerName][y]&&typeof game.maps[playerName][y][x]!="undefined")
                         game.maps[playerName][y][x]=config.statusMissed
                     else
                         responseCell=false
