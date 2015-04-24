@@ -462,7 +462,7 @@ define([
         @addTransparentBg()
         textMessage='Waiting for the other player...'
         if(!@waitingText)
-          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2-10,y:@size.height/2})
+          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2,y:@size.height/2})
         else
           @waitingText.setText(textMessage)
         @addPreloader()
