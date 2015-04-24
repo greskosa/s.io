@@ -551,7 +551,7 @@ define([
         @addTimeText()
 
       addTimeText:()->
-        @timeText=@addText('',{font:"30px Fjalla One", fill:'#FFFFFF',stroke: "#000000", strokeThickness: 3},{x:@size.width+30,y:@size.height/@scaleParams-300})
+        @timeText=@addText('',{font:"34px Fjalla One", fill:'#FFFFFF',stroke: "#000000", strokeThickness: 3},{x:(@size.width),y:(@size.height/@scaleParams-300)})
 
       addHPBars:()->
         texture1= PIXI.Texture.fromImage('./imgs/yourHPbar.png');
