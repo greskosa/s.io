@@ -137,6 +137,7 @@ io.sockets.on('connection', function (socket) {
 //        4 - killed
         var y=cell.y
         var x=cell.x
+        var responseCell=cell
         var updateCells=[]
         var isWinner=false
         console.log(cell)
@@ -152,16 +153,19 @@ io.sockets.on('connection', function (socket) {
             var isYourTurn=game.currentPlayer==playerName
             if(!isYourTurn){
                 otherPlayerName=game.currentPlayer
-                if (game.maps[playerName][y][x]==config.statusMissed||game.maps[playerName][y][x]==config.statusInjured)
+                if (game.maps[playerName][y]&&game.maps[playerName][y][x]==config.statusMissed||game.maps[playerName][y]&&game.maps[playerName][y][x]==config.statusInjured)
                   return console.log("you have already fired here!")
-                if(game.maps[playerName][y][x]==1){
+                if(game.maps[playerName][y]&&game.maps[playerName][y][x]==1){
                     status=markCells(game.maps[playerName],y,x,updateCells)
                     var sum=getShipsSum(game.maps[playerName])
                     shipEnemyCount=sum
                     isWinner=sum==0
 
                 }else{
-                    game.maps[playerName][y][x]=config.statusMissed
+                    if(game.maps[playerName][y]&&game.maps[playerName][y][x])
+                        game.maps[playerName][y][x]=config.statusMissed
+                    else
+                        responseCell=false
                     console.log('change player to:'+playerName)
                     game.currentPlayer=playerName
                     status=config.statusMissed
@@ -186,7 +190,7 @@ io.sockets.on('connection', function (socket) {
                 shipCountArr=[getShipsSum(game.maps[otherPlayerName]),shipEnemyCount]
             else
                 shipCountArr=[shipEnemyCount,getShipsSum(game.maps[otherPlayerName])]
-           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:responseUpdateCells, shipCountArr:shipCountArr});
+           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:responseCell,status:status,map: game.maps[plName],updateCells:responseUpdateCells, shipCountArr:shipCountArr});
            if(isWinner)
             io.to(id).emit('winner', { winner: game.currentPlayer});
 

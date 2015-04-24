@@ -149,6 +149,7 @@ define([
             @isEnableFire=false
             @xSprite.visible=false
             @cannon.fired=true
+            @clearTimer()
             setTimeout(()=>
               @fire({x:cells.cellX,y:cells.cellY})
             ,1000)
@@ -461,7 +462,7 @@ define([
         @addTransparentBg()
         textMessage='Waiting for the other player...'
         if(!@waitingText)
-          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
+          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2-10,y:@size.height/2})
         else
           @waitingText.setText(textMessage)
         @addPreloader()
@@ -510,6 +511,24 @@ define([
         console.info('IS YOUR TURN '+@isYourTurn)
         if(@isYourTurn)
           @isEnableFire=true
+          @startTime=new Date().getTime()
+          @timerOn()
+
+      timerOn:()->
+        @timerId=setInterval(()=>
+            diff=parseInt((new Date().getTime()-@startTime)/1000)-1
+            if(config.waitTime-diff<=10)
+              if(config.waitTime-diff<=0)
+                @clearTimer()
+                @fire({x:-1,y:-1})
+              else
+                @timeText.setText(config.waitTime-diff)
+
+        ,1000)
+
+      clearTimer:()->
+        clearInterval(@timerId)
+        @timeText.setText('')
 
       startGame:(data)->
         console.log(data)
@@ -529,7 +548,10 @@ define([
         @addCannon()
         @initTextureFireResult()
         @addHPBars()
+        @addTimeText()
 
+      addTimeText:()->
+        @timeText=@addText('',{font:"30px Fjalla One", fill:'#FFFFFF',stroke: "#000000", strokeThickness: 3},{x:@size.width+10,y:@size.height/@scaleParams-300})
 
       addHPBars:()->
         texture1= PIXI.Texture.fromImage('./imgs/yourHPbar.png');
@@ -618,9 +640,9 @@ define([
 #        data.shipCountArr 0 is always yours, 1 is always enemy
         console.log(data.shipCountArr)
         if(@isYourTurn)
-         @renderFireResult(data.status,data.cell)
-         @updateShootMap(data.status,data.cell,data.updateCells)
-
+         if data.cell
+           @renderFireResult(data.status,data.cell)
+           @updateShootMap(data.status,data.cell,data.updateCells)
         else
          @updateYourShipsMap(data.map)
 
@@ -678,6 +700,9 @@ define([
         @battleStarted=false
         setTimeout(()=>
           alert(msg)
+          setTimeout(()=>
+            location.reload()
+          ,2000)
         ,2000)
 
 

@@ -30,7 +30,10 @@ define([
 
       addPlayerName:(name)->
         window.playerName=name
-        @addText("Your name: "+name,{font:"23px Verdana", fill:"#FF0000",stroke: "black", strokeThickness: 2},{x:@size.width*0.8,y:20})
+        if(!@playerName)
+          @playerName=@addText("Your name: "+name,{font:"23px Verdana", fill:"#FF0000",stroke: "black", strokeThickness: 2},{x:@size.width*0.8,y:20})
+        else
+          @playerName.setText("Your name: "+name)
 
     return StartScene
 )

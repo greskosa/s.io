@@ -11,5 +11,6 @@
     "shipsSum":20,
     "statusMissed":2,
     "statusInjured":3,
-    "statusKilled":4
+    "statusKilled":4,
+    "waitTime":20
 }
