@@ -1,7 +1,7 @@
 {
     "appName":"SeaBattle PvP 1.0",
     "assetsToLoad":["./imgs/bginroom.jpg"],
-    "server":"http://localhost",
+    "server":"http://10.37.4.250",
     "port":"8080",
     "defaultPlayerName":"Player",
     "originalWidth":1024,

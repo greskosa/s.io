@@ -19,6 +19,7 @@ define([
       isEnableFire:false
       dirtySpaceBtwnFlds:90
       fireSpritesArr:[]
+      HPBars:{}
 
       gameXPadding:(isZero)->
         if !@battleStarted||isZero then return 0
@@ -527,8 +528,57 @@ define([
         @addXSprite()
         @addCannon()
         @initTextureFireResult()
+        @addHPBars()
 
 
+      addHPBars:()->
+        texture1= PIXI.Texture.fromImage('./imgs/yourHPbar.png');
+        texture2= PIXI.Texture.fromImage('./imgs/enemyHPbar.png');
+
+        yourMask = new PIXI.Graphics();
+        @addChild(yourMask)
+        enemyMask = new PIXI.Graphics();
+        @addChild(enemyMask)
+
+        yourHP = new PIXI.Sprite(texture1);
+        yourHP.position.x=@fieldPaddingX
+        yourHP.position.y=0
+        @addChild(yourHP)
+
+        yourHP.mask=yourMask
+        @HPBars['your']=yourHP
+        @updateBar('your',20)
+
+        enemyHP = new PIXI.Sprite(texture2);
+        enemyHP.position.x= @size.width-@fieldPaddingX-15
+        enemyHP.position.y=0
+        @addChild(enemyHP)
+
+        enemyHP.mask=enemyMask
+        @HPBars['enemy']=enemyHP
+        @updateBar('enemy',20)
+
+      updateBar:(which,shipsCount)->
+        console.log(which)
+        console.log(shipsCount)
+        console.log('-------------------')
+        if shipsCount%2!=0 then return #1hp to 2 small ships
+        console.log('continue')
+        mask=@HPBars[which].mask
+        height=21
+        if which=='your'
+          x=@HPBars['your'].position.x
+          width=shipsCount/2*53
+        else
+          diffX=(20-shipsCount)/2*53
+          console.log(diffX)
+          console.log(@HPBars[which].position.x)
+          x=@HPBars[which].position.x+diffX
+          width=shipsCount/2*53
+        mask.clear()
+        mask.beginFill();
+        mask.drawRect(x, 0, width,height);
+        mask.endFill();
 
       makeNormalShipCollor:()->
         @allShips.forEach((ship)=>
@@ -565,12 +615,25 @@ define([
 
 
       rerenderBattleField:(data)->
+#        data.shipCountArr 0 is always yours, 1 is always enemy
+        console.log(data.shipCountArr)
         if(@isYourTurn)
          @renderFireResult(data.status,data.cell)
          @updateShootMap(data.status,data.cell,data.updateCells)
+
         else
          @updateYourShipsMap(data.map)
+
+        if(data.isYourTurn)
+          if(@isYourTurn)
+            @updateBar('enemy',data.shipCountArr[1])
+        else
+          if(!@isYourTurn)
+            @updateBar('your',data.shipCountArr[0])
+
         @setTurn(data.isYourTurn)
+
+
         @changeTurn()
 
 

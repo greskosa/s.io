@@ -111,19 +111,20 @@ io.sockets.on('connection', function (socket) {
         return status
 
     }
-    function checkIsWinner(map){
-        console.log('checkIsWinner')
+
+    function getShipsSum(map){
         var sum=0
         for(var i=0;i<10;i++){
-            for(var j=0;j<10;j++){
-                if(map[i][j]==1)
-                sum+=1
-            }
+           for(var j=0;j<10;j++){
+               if(map[i][j]==1)
+               sum+=1
+           }
         }
-        console.log('SUM:'+sum)
-        return sum==0
+        return sum
     }
     function fire(socket,roomName,game, cell){
+        var shipEnemyCount=20
+        var otherPlayerName=''
 //        Shot map
 //        0 - empty cell
 //        1 - cell with ship or part of ship
@@ -149,30 +150,43 @@ io.sockets.on('connection', function (socket) {
             response[playerName]={}
             console.log('current player:'+game.currentPlayer)
             var isYourTurn=game.currentPlayer==playerName
-            console.log(isYourTurn)
             if(!isYourTurn){
+                otherPlayerName=game.currentPlayer
                 if (game.maps[playerName][y][x]==config.statusMissed||game.maps[playerName][y][x]==config.statusInjured)
                   return console.log("you have already fired here!")
                 if(game.maps[playerName][y][x]==1){
                     status=markCells(game.maps[playerName],y,x,updateCells)
-                    isWinner=checkIsWinner(game.maps[playerName])
+                    var sum=getShipsSum(game.maps[playerName])
+                    shipEnemyCount=sum
+                    isWinner=sum==0
 
                 }else{
                     game.maps[playerName][y][x]=config.statusMissed
                     console.log('change player to:'+playerName)
                     game.currentPlayer=playerName
                     status=config.statusMissed
+                    shipEnemyCount=getShipsSum(game.maps[playerName])
                 }
                 break;
+            }else{
+                otherPlayerName=playerName
             }
         }
+        console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        console.log(otherPlayerName)
+        console.log(game.maps)
+        console.log(game.maps[otherPlayerName])
+        console.log('-----------------------------')
+        var shipCountArr=[]
         var responseUpdateCells=status==config.statusKilled?updateCells:[]
         for(var id in roomsClients){
            var plName=getClientName(id)
            var isYourTurn=game.currentPlayer==plName
-           console.log(id)
-           console.log(isYourTurn)
-           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:responseUpdateCells});
+            if(isYourTurn)
+                shipCountArr=[getShipsSum(game.maps[otherPlayerName]),shipEnemyCount]
+            else
+                shipCountArr=[shipEnemyCount,getShipsSum(game.maps[otherPlayerName])]
+           io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:{x:x,y:y},status:status,map: game.maps[plName],updateCells:responseUpdateCells, shipCountArr:shipCountArr});
            if(isWinner)
             io.to(id).emit('winner', { winner: game.currentPlayer});
 
@@ -235,8 +249,8 @@ io.sockets.on('connection', function (socket) {
         }
         rooms=newRoomsList
         socket.broadcast.emit('updateRoomsList',{rooms:rooms});
-        console.log(JSON.stringify(games))
-        console.log(JSON.stringify(rooms))
+//        console.log(JSON.stringify(games))
+//        console.log(JSON.stringify(rooms))
 
     }
 

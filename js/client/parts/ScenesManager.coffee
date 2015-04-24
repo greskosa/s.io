@@ -17,7 +17,7 @@ define([
     create: (screen,options)->
       if (@renderer) then return @
       @screen=screen
-      @renderer= PIXI.autoDetectRenderer(screen.width, screen.height, options);
+      @renderer= new PIXI.CanvasRenderer(screen.width, screen.height, options);
       document.body.appendChild(@renderer.view);
       requestAnimFrame(()=>@loop());
       return @;
