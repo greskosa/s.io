@@ -586,7 +586,6 @@ define([
         console.log(which)
         console.log(shipsCount)
         console.log('-------------------')
-        if shipsCount%2!=0 then return #1hp to 2 small ships
         console.log('continue')
         mask=@HPBars[which].mask
         height=21
