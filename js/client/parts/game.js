@@ -3,9 +3,7 @@ define([
 ],  function(ScenesManager,config,PIXI){
         config=JSON.parse(config)
         function Game(){
-               this.scenesManager=new ScenesManager()
-               //create renderer
-               this.scenesManager.create({transparent:true},true)
+
 
                this.goToStartScene=function(){
                    //create a the start scene
@@ -38,26 +36,26 @@ define([
 
 
                this.loadRoom=function(data){
-                   var loader = new PIXI.AssetLoader(config.assetsToLoad);
-                   loader.onComplete = function(all){
-                        document.getElementsByTagName('canvas')[0].style.background="url('./imgs/bginroom.jpg')"
-                        this.gameScene = this.scenesManager.createScene('GameScene');
-                        this.gameScene.roomName=data.roomName
-                        this.scenesManager.goToScene('GameScene');
-                        this.gameScene.sendShips=function(map){
-                            console.log('send ship')
-                            this.socket.emit('sendShipsPosition',{map:map,roomName:data.roomName})
-                        }.bind(this)
-                        this.gameScene.fire=function(cell){
-                            console.log('fire!')
-                            this.socket.emit('fire',{roomName:this.gameScene.roomName,cell:cell})
-                        }.bind(this)
-                   }.bind(this)
-                   loader.load();
+                    document.getElementsByTagName('canvas')[0].style.background="url('./imgs/bginroom.jpg')"
+                    this.gameScene = this.scenesManager.createScene('GameScene');
+                    this.gameScene.roomName=data.roomName
+                    this.scenesManager.goToScene('GameScene');
+                    this.gameScene.sendShips=function(map){
+                        console.log('send ship')
+                        this.socket.emit('sendShipsPosition',{map:map,roomName:data.roomName})
+                    }.bind(this)
+                    this.gameScene.fire=function(cell){
+                        console.log('fire!')
+                        this.socket.emit('fire',{roomName:this.gameScene.roomName,cell:cell})
+                    }.bind(this)
 
                }
-
-               this.goToStartScene()
+               this.init=function(){
+                   this.scenesManager=new ScenesManager()
+                   //create renderer
+                   this.scenesManager.create({transparent:true},true)
+                   this.goToStartScene()
+               }
 
         }
       window.game=new Game()

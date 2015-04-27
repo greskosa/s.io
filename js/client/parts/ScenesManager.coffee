@@ -8,6 +8,7 @@ define([
     currentScene:null
     stage:new PIXI.Stage()
 
+
     #     /**
     #     * Create an instance of Renderer
     #     *
@@ -18,6 +19,7 @@ define([
       if (@renderer) then return @
       @renderer= new PIXI.CanvasRenderer(config.originalWidth, config.originalHeight, options);
       document.body.appendChild(@renderer.view);
+      @renderer.view.style.opacity=1
       if (isScale)
         @rescale();
         window.addEventListener('resize', ()=>

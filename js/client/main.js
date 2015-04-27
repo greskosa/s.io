@@ -1,3 +1,4 @@
+
 require.config({
     urlArgs : 'antichache',
     baseUrl:"./js/client",
@@ -24,5 +25,5 @@ require.config({
 
 
 //#    kick start application
-    deps: ['./parts/connections']
+    deps: ['./parts/device']
 });

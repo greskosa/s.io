@@ -2,13 +2,19 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 </head>
 <body>
-<div id="portrait"><span>Нет поддержки портретного режима</span></div>
-<script src="./js/client/libs/require.js" data-main="./js/client/main.js"></script>
+<div id="portrait"><span>Landscape support only</span></div>
 
+<div class="fullscreen-request" id="fullscreen-request">
+    <div class="go-to-center">
+        Please, allow full screen mode<br><br><a class="allow-btn" onclick="device.makeFullscreen(document.body)">Allow</a>
+    </div>
+</div>
+<script src="./js/client/libs/require.js" data-main="./js/client/main.js"></script>
 </body>
 </html>
