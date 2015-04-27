@@ -10,6 +10,9 @@ canvas{
     background: url("../imgs/bg2.jpg") scroll 0 0;
     background-size: 100% 100%;
     margin:0 auto;
+    position: absolute;
+    top:50%;
+    left: 50%;
 }
 #portrait{
     display: none;
@@ -42,12 +45,3 @@ canvas{
  }
 }
 
-@media screen and (min-height: 768px) {
-    canvas {
-       position: absolute;
-       top:50%;
-       left: 50%;
-       margin-left: -512px;
-       margin-top: -384px;
-    }
-}

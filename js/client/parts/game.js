@@ -3,15 +3,9 @@ define([
 ],  function(ScenesManager,config,PIXI){
         config=JSON.parse(config)
         function Game(){
-               var screen={}
-               screen.width=window.outerWidth>config.originalWidth? config.originalWidth:window.outerWidth
-               screen.height=window.outerHeight>config.originalHeight? config.originalHeight:window.outerHeight
-               screen.scaleX=screen.width/config.originalWidth
-               screen.scaleY=screen.height/config.originalHeight
-
                this.scenesManager=new ScenesManager()
                //create renderer
-               this.scenesManager.create(screen,{transparent:true})
+               this.scenesManager.create({transparent:true},true)
 
                this.goToStartScene=function(){
                    //create a the start scene
@@ -66,6 +60,7 @@ define([
                this.goToStartScene()
 
         }
-     return new Game()
+      window.game=new Game()
+      return window.game
     }
 )

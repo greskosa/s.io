@@ -14,7 +14,7 @@ define([
       loadingWait:()->
          textMessage='Loading. Please wait...'
          if(!@text)
-            @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
+            @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:config.originalWidth/2+10,y:config.originalHeight/2})
          else
              @text.setText(textMessage)
 

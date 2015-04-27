@@ -1,7 +1,7 @@
 define([
-    'pixijs','Scene','StartScene','CreateGameScene','JoinGameScene','GameScene'
-],  (PIXI,Scene,StartScene,CreateGameScene,JoinGameScene,GameScene)->
-
+    'pixijs','Scene','StartScene','CreateGameScene','JoinGameScene','GameScene','text!./../config.json'
+],  (PIXI,Scene,StartScene,CreateGameScene,JoinGameScene,GameScene,config)->
+  config=JSON.parse(config)
   class ScenesManager
     scenes:{}
     renderer:null
@@ -14,13 +14,30 @@ define([
     #     * @param {object} screen Width,Height or Scale of canvas.
     #     * @param {object} options Options of renderer, fox example transparent.
     #     */
-    create: (screen,options)->
+    create: (options,isScale)->
       if (@renderer) then return @
-      @screen=screen
-      @renderer= new PIXI.CanvasRenderer(screen.width, screen.height, options);
+      @renderer= new PIXI.CanvasRenderer(config.originalWidth, config.originalHeight, options);
       document.body.appendChild(@renderer.view);
+      if (isScale)
+        @rescale();
+        window.addEventListener('resize', ()=>
+          @rescale()
+        , false);
       requestAnimFrame(()=>@loop());
       return @;
+
+
+    rescale:()->
+      console.log('rescale')
+      @ratio = Math.min(window.innerWidth / config.originalWidth, window.innerHeight / config.originalHeight)
+      @width = config.originalWidth * @ratio;
+      @height =  config.originalHeight * @ratio;
+      @renderer.resize(@width, @height);
+      console.log( @renderer.view.style)
+      @renderer.view.style.marginLeft=-@width/2+"px"
+      @renderer.view.style.marginTop=-@height/2+"px"
+      console.log(@renderer)
+
 
     #    /**
     #    * Rerender current scene via requestAnimFrame
@@ -30,8 +47,23 @@ define([
       requestAnimFrame(()=>@loop());
       if (!@currentScene || @currentScene.isPaused()) then return;
       @currentScene.update();
-#      console.log(@currentScene)
+      @applyRatio(@currentScene, @ratio); #//scale to screen size
       @renderer.render(@stage);
+      @applyRatio(@currentScene, 1/@ratio); #//restore original scale
+
+    applyRatio:(displayObject, ratio)->
+      if (ratio == 1) then return;
+#      console.log(ratio)
+#      console.log(displayObject.position)
+#      console.log(displayObject.scale)
+      displayObject.position.x = displayObject.position.x * ratio;
+      displayObject.position.y = displayObject.position.y * ratio;
+      displayObject.scale.x = displayObject.scale.x * ratio;
+      displayObject.scale.y = displayObject.scale.y * ratio;
+#      if displayObject.children&&displayObject.children.length
+#        displayObject.children.forEach((child)=>
+#          @applyRatio(child, ratio);
+#        )
 
     #    /**
     #    * Create new scene
@@ -42,12 +74,12 @@ define([
       if (@scenes[id])
         return @scenes[id]; #//doesn't create if exist, just return
       switch id
-        when 'StartScene' then  scene = new StartScene(@screen);
-        when 'CreateGameScene' then scene = new CreateGameScene(@screen);
-        when 'JoinGameScene' then scene = new JoinGameScene(@screen);
-        when 'GameScene' then scene = new GameScene(@screen);
+        when 'StartScene' then  scene = new StartScene();
+        when 'CreateGameScene' then scene = new CreateGameScene();
+        when 'JoinGameScene' then scene = new JoinGameScene();
+        when 'GameScene' then scene = new GameScene();
         else
-          scene=new Scene(@screen)
+          scene=new Scene()
       @scenes[id] = scene;
       return scene;
 

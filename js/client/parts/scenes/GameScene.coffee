@@ -97,8 +97,8 @@ define([
         @cannon.anchor.x = 0.5;
         @cannon.anchor.y = 0.5;
         @cannon.fired=false;
-        @cannon.position.x=@size.width/@scaleParams.x-90
-        @cannon.position.y=@size.height/@scaleParams.y-110
+        @cannon.position.x=config.originalWidth/@scaleParams.x-90
+        @cannon.position.y=config.originalHeight/@scaleParams.y-110
         @addChild(@cannon)
 
       updateCannon:()=>
@@ -142,7 +142,7 @@ define([
 
       clickBattleFieldHandler:(data)=>
           if (@battleStarted&&@isYourTurn&&@isEnableFire)
-            cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
+            cells=@getCells({x:data.global.x/window.game.scenesManager.ratio,y:data.global.y/window.game.scenesManager.ratio},@cellSize/2,@cellSize/2)
             if(@shootMap[cells.cellY][cells.cellX]!=0)
               return alert 'You cannot shoot here again!'
             @playSound('./audio/cannon.mp3')
@@ -157,7 +157,7 @@ define([
 
       moveBattleFieldHandler:(data)=>
         if (@battleStarted&&@isYourTurn&&@isEnableFire)
-          cells=@getCells({x:data.global.x,y:data.global.y},@cellSize/2,@cellSize/2)
+          cells=@getCells({x:data.global.x/window.game.scenesManager.ratio,y:data.global.y/window.game.scenesManager.ratio},@cellSize/2,@cellSize/2)
           if @validateCell(cells.cellX,cells.cellY)&&@xSprite
             @xSprite.visible=true
             @placeSpriteObject.call(@xSprite,@,cells.cellY,cells.cellX)
@@ -165,7 +165,7 @@ define([
             @xSprite.visible=false if @xSprite
 
       addShips:()->
-        xPos=@size.width-140
+        xPos=config.originalWidth-140
         @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
         @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
         @oneShip('./imgs/ship1.png',65,65,{x:xPos,y:500},1)
@@ -237,8 +237,8 @@ define([
 
       validateShip:(classContext,eventData)->
         if(eventData)
-          @position.x = eventData.global.x
-          @position.y = eventData.global.y
+          @position.x = eventData.global.x/window.game.scenesManager.ratio
+          @position.y = eventData.global.y/window.game.scenesManager.ratio
         isV=classContext.isValidShipLocation.call(@,classContext,eventData)
         if isV
           @tilePosition.y=@height
@@ -305,10 +305,10 @@ define([
           #            // make the button interactive..
           buttonLeft.interactive = true;
           buttonRight.interactive = true;
-          buttonLeft.position.x = @size.width-200;
-          buttonLeft.position.y = @size.height-100;
-          buttonRight.position.x = @size.width-60;
-          buttonRight.position.y = @size.height-100;
+          buttonLeft.position.x = config.originalWidth-200;
+          buttonLeft.position.y = config.originalHeight-100;
+          buttonRight.position.x = config.originalWidth-60;
+          buttonRight.position.y = config.originalHeight-100;
           buttonLeft.anchor.x = 0.5;
           buttonLeft.anchor.y = 0.5;
           buttonRight.anchor.x = 0.5;
@@ -332,7 +332,7 @@ define([
           btn.buttonMode = true;
           #            // make the button interactive..
           btn.interactive = true;
-          btn.position.x = @size.width-140;
+          btn.position.x = config.originalWidth-140;
           btn.position.y = 90
           btn.anchor.x = 0.5;
           btn.anchor.y = 0.5;
@@ -399,6 +399,8 @@ define([
         calculateY=(position.y-@position.y-@axisYFieldStartPos()*@scaleParams.y+yParam*@scaleParams.y)/(@cellSize*@scaleParams.y)
         cellX= Math.round(calculateX)-1
         cellY= Math.round(calculateY)-1
+        console.log(cellX)
+        console.log(cellY)
         return {cellX:cellX,cellY:cellY}
 
       placeSpriteObject:(classContext,cellY,cellX,isYourZone)->
@@ -462,7 +464,7 @@ define([
         @addTransparentBg()
         textMessage='Waiting for the other player...'
         if(!@waitingText)
-          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2,y:@size.height/2})
+          @waitingText=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:config.originalWidth/2,y:config.originalHeight/2})
         else
           @waitingText.setText(textMessage)
         @addPreloader()
@@ -551,7 +553,7 @@ define([
         @addTimeText()
 
       addTimeText:()->
-        @timeText=@addText('',{font:"34px Fjalla One", fill:'#FFFFFF',stroke: "#000000", strokeThickness: 3},{x:(@size.width),y:(@size.height/@scaleParams-300)})
+        @timeText=@addText('',{font:"34px Fjalla One", fill:'#FFFFFF',stroke: "#000000", strokeThickness: 3},{x:(config.originalWidth),y:(config.originalHeight/@scaleParams-300)})
 
       addHPBars:()->
         texture1= PIXI.Texture.fromImage('./imgs/yourHPbar.png');
@@ -572,7 +574,7 @@ define([
         @updateBar('your',20)
 
         enemyHP = new PIXI.Sprite(texture2);
-        enemyHP.position.x= @size.width-@fieldPaddingX-15
+        enemyHP.position.x= config.originalWidth-@fieldPaddingX-15
         enemyHP.position.y=0
         @addChild(enemyHP)
 
@@ -633,7 +635,7 @@ define([
           color='red'
         if(@turnText)
           @removeChild(@turnText)
-        @turnText=@addText(text,{font:"40px Fjalla One", fill:color,stroke: "#000000", strokeThickness: 3},{x:@size.width/@scaleParams.x/2,y:-10})
+        @turnText=@addText(text,{font:"40px Fjalla One", fill:color,stroke: "#000000", strokeThickness: 3},{x:config.originalWidth/@scaleParams.x/2,y:-10})
 
 
       rerenderBattleField:(data)->

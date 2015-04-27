@@ -14,7 +14,7 @@ define([
        console.log Object.keys(rooms)
        @clearInfo()
        if(!rooms||(rooms&&!Object.keys(rooms).length))
-         @msg=@addText('No rooms are available',{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:@size.width/2,y:100})
+         @msg=@addText('No rooms are available',{font:"18px Verdana", fill:"#1a4a67",stroke: "#FFFFFF", strokeThickness: 3},{x:config.originalWidth/2,y:100})
          return
        @rooms=rooms
        count=0
@@ -56,7 +56,7 @@ define([
          return
         textMessage='Connecting to the room...'
         if(!@text)
-          @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:@size.width/2+10,y:@size.height/2})
+          @text=@addText(textMessage,{font:"40px Verdana", fill:"black",stroke: "#FF0000", strokeThickness: 6},{x:config.originalWidth/2+10,y:config.originalHeight/2})
         else
           @text.setText(textMessage)
         @addPreloader(true)
