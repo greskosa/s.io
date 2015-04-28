@@ -509,6 +509,8 @@ define([
 
 
       setTurn:(isYourTurn)->
+        if isYourTurn&&!@isYourTurn
+          @playSound('./audio/turn.mp3')
         @isYourTurn=isYourTurn
         console.info('IS YOUR TURN '+@isYourTurn)
         if(@isYourTurn)
