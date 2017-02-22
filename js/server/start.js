@@ -192,7 +192,7 @@ io.sockets.on('connection', function (socket) {
                 shipCountArr=[shipEnemyCount,getShipsSum(game.maps[otherPlayerName])]
            io.to(id).emit('fireResponse', { isYourTurn: isYourTurn,cell:responseCell,status:status,map: game.maps[plName],updateCells:responseUpdateCells, shipCountArr:shipCountArr});
            if(isWinner)
-            io.to(id).emit('winner', { winner: game.currentPlayer});
+            io.to(id).emit('winner', { winner: game.currentPlayer, otherPlayerMap:game.maps[otherPlayerName]});
 
         }
 //        console.log(status)
