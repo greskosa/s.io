@@ -38,6 +38,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', ['coffee','requirejs'])
 
+  grunt.registerTask('default', ['build']);
 
 
 

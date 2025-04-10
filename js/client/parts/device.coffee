@@ -1,43 +1,42 @@
-define([
-],  ()->
+define([], () ->
   class Device
+    constructor: () ->
+      @fullScreenDomEl = document.getElementById('fullscreen-request')
+      @hideIfPc()
 
-     constructor:()->
-       @fullScreenDomEl=document.getElementById('fullscreen-request')
-       @hideIfPc()
+    hideFullScreenDom: () ->
+      @fullScreenDomEl.style.display = "none"
 
-     hideFullScreenDom:()->
-        @fullScreenDomEl.style.display="none"
+    makeFullscreen: (element) ->
+      @hideFullScreenDom()
+      @start()
+      if element.requestFullscreen
+        element.requestFullscreen()
+      else if element.msRequestFullscreen
+        element.msRequestFullscreen()
+      else if element.mozRequestFullScreen
+        element.mozRequestFullScreen()
+      else if element.webkitRequestFullscreen
+        element.webkitRequestFullscreen()
 
-     makeFullscreen:(element)->
+    hideIfPc: () ->
+      if !@isMobile()
         @hideFullScreenDom()
         @start()
-        if (element.requestFullscreen)
-            element.requestFullscreen();
-        else if (element.msRequestFullscreen)
-            element.msRequestFullscreen();
-        else if (element.mozRequestFullScreen)
-            element.mozRequestFullScreen();
-        else if (element.webkitRequestFullscreen)
-            element.webkitRequestFullscreen();
 
+    isMobile: () ->
+      return navigator.userAgent.match(/Android/i) || 
+             navigator.userAgent.match(/webOS/i) || 
+             navigator.userAgent.match(/iPhone/i) || 
+             navigator.userAgent.match(/iPad/i) || 
+             navigator.userAgent.match(/iPod/i) || 
+             navigator.userAgent.match(/BlackBerry/i) || 
+             navigator.userAgent.match(/Windows Phone/i)
 
-     hideIfPc:()->
-       if !@isMobile()
-         @hideFullScreenDom()
-         @start()
+    start: () ->
+      require(["./parts/connections"])
 
-     isMobile:()->
-       return navigator.userAgent.match(/Android/i)|| navigator.userAgent.match(/webOS/i)||navigator.userAgent.match(/iPhone/i)||navigator.userAgent.match(/iPad/i)||navigator.userAgent.match(/iPod/i)|| navigator.userAgent.match(/BlackBerry/i)||navigator.userAgent.match(/Windows Phone/i)
-
-     start:()->
-        require(["./parts/connections"])
-
-
-
-
-
-  window.device=new Device()
+  window.device = new Device()
   return device
 )
 
